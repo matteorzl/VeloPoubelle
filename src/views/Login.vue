@@ -8,7 +8,7 @@ let rememberMe = ref(null)
 </script>
 
 <template>
-    <div class="surface-card p-4 shadow-2 border-round w-full">
+    <div class="surface-card p-4 shadow-2 border-round">
         <div class="text-center mb-5">
             <div class="text-900 text-3xl font-medium mb-3">Connexion</div>
             <span class="text-600 font-medium line-height-3">Pas de compte ?</span>
@@ -17,11 +17,11 @@ let rememberMe = ref(null)
 
         <div>
             <FloatLabel class="mb-6">
-                <InputText class="w-full" id="username" v-model="username" />
+                <InputText class="w-10/12" id="username" v-model="username" />
                 <label for="username">Nom d'utilisateur</label>
             </FloatLabel>
             <FloatLabel class="mb-6">
-                <InputText class="w-full" id="password" v-model="password" />
+                <InputText class="w-10/12" id="password" v-model="password" />
                 <label for="password">Mot de passe</label>
             </FloatLabel>
             <div class="flex align-items-center justify-content-between mb-6">
@@ -32,7 +32,7 @@ let rememberMe = ref(null)
                 <a class="font-medium underline ml-2 text-right cursor-pointer">Mot de passe oublié ?</a>
             </div>
 
-            <Button label="Se connecter" rounded class="w-full bg-black"></Button>
+            <Button label="Se connecter" rounded class="w-10/12 bg-black"></Button>
         </div>
     </div>
 </template>
