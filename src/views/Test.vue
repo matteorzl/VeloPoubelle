@@ -1,3 +1,20 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import axios from 'axios';
+
+const utilisateurs = ref([]);
+const error = ref(null);
+
+onMounted(async () => {
+  try {
+    const response = await axios.get('http://localhost:3000/api/utilisateurs');
+    utilisateurs.value = response.data;
+  } catch (err) {
+    error.value = err.message;
+  }
+});
+</script>
+
 <template>
     <div>
         <div v-if="error">Erreur: {{ error }}</div>
@@ -11,23 +28,6 @@
         </ul>
     </div>
 </template>
-  
-<script setup>
-  import { ref, onMounted } from 'vue';
-  import axios from 'axios';
-  
-  const utilisateurs = ref([]);
-  const error = ref(null);
-  
-  onMounted(async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/api/utilisateurs');
-      utilisateurs.value = response.data;
-    } catch (err) {
-      error.value = err.message;
-    }
-  });
-</script>
 
 <style>
 .p-progress-spinner {
@@ -52,4 +52,4 @@
     }
   }
 }
-  </style>
+</style>

@@ -1,7 +1,16 @@
+<script setup>
+    import { ref } from 'vue';
+    import { RouterLink } from 'vue-router';
+
+    let username = ref(null)
+    let password = ref(null)
+    let rememberMe = ref(null)
+</script>
+
 <template>
     <div class="mx-auto surface-card p-4 shadow-2 border-round" style="width:600px">
         <div class="text-center mb-5">
-            <img src="./../assets/LogoBB.png" class="mx-auto" width="400px"/>
+            <img src="./../assets/logo.png" class="mx-auto" width="400px"/>
             <div class="text-900 text-3xl font-bold mb-3">Connexion</div>
             <span class="text-600 font-medium line-height-3">Pas de compte ?</span>
             <RouterLink class="font-medium underline ml-2 cursor-pointer" to="/register">Créer compte</RouterLink>
@@ -29,12 +38,3 @@
         </div>
     </div>
 </template>
-
-<script setup>
-    import { ref } from 'vue';
-    import { RouterLink } from 'vue-router';
-
-    let username = ref(null)
-    let password = ref(null)
-    let rememberMe = ref(null)
-</script>
