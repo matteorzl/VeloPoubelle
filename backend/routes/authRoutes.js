@@ -2,11 +2,10 @@
 const express = require('express');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const mysql = require('mysql2/promise'); // Utilisation de mysql2/promise
+const mysql = require('mysql2/promise');
 
 const router = express.Router();
 
-// Configuration de la connexion à la base de données(à adapter)
 const pool = mysql.createPool({
     host: 'agweco.fr',
     user: 'pma-admin',  
@@ -17,8 +16,8 @@ const pool = mysql.createPool({
     queueLimit: 0
 });
 
-// Route de création de compte
-router.post('/signup', async (req, res) => {
+// Register route
+router.post('/register', async (req, res) => {
   const { nom, prenom, email, mot_de_passe, role } = req.body;
   const hashedPassword = await bcrypt.hash(mot_de_passe, 10);
   try {
@@ -36,7 +35,7 @@ router.post('/signup', async (req, res) => {
   }
 });
 
-// Route de connexion
+// Login route
 router.post('/login', async (req, res) => {
   const { email, mot_de_passe } = req.body;
 
@@ -59,7 +58,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Email ou mot de passe incorrect' });
     }
 
-    // Génération du token JWT (à adapter avec votre secret)
+    // Génération du token JWT
     const token = jwt.sign({ userId: user.id_utilisateur }, 'votre_secret', { expiresIn: '1h' });
 
     res.json({ token });

@@ -15,7 +15,7 @@ const signup = async () => {
   error.value = null;
   try {
     console.log(lastName.value,firstName.value,mail.value,password.value,role.value)
-    const response = await axios.post('/api/signup', {
+    const response = await axios.post('/api/register', {
       nom: lastName.value,
       prenom: firstName.value, 
       email: mail.value,
