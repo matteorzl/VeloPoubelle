@@ -1,49 +1,10 @@
-<template>
-    <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'><link rel="stylesheet" href="./style.css">
-    <div id="nav-bar">
-        <input id="nav-toggle" type="checkbox"/>
-        <div id="nav-header">
-            <img id="nav-title" target="_blank" src="./../../assets/logo_white.png" width="200px"/>
-            <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
-            <hr/>
-        </div>
-        <div id="nav-content" class="font-bold">
-            <div class="nav-button"><i class="fas fa-bicycle"></i><span>Vos trajets</span></div>
-            <div id="nav-content-highlight"></div>
-        </div>
-        <input id="nav-footer-toggle" type="checkbox"/>
-        <div id="nav-footer" class="font-bold">
-            <div id="nav-footer-heading">
-            <div id="nav-footer-avatar"><i class="fas fa-user"></i></div>
-            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">{{nom}} {{prenom}}</a><span id="nav-footer-subtitle">Admin</span></div>
-            <label for="nav-footer-toggle"><i class="fas fa-caret-up"></i></label>
-            </div>
-            <div id="nav-footer-content">
-            <Lorem>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Lorem>
-            </div>
-            <button class="logout-button">Déconnexion</button>
-        </div>
-    </div>
-</template>
-
-<script>
-
-export default{
-  props:['nom','prenom']
-}
-</script>
-
-<style lang="scss">
-  @import "sidebar.sass";
-
-  :root {
-  --background: #e4dfd0;
+:root {
   --navbar-width: 256px;
   --navbar-width-min: 80px;
-  --navbar-dark-primary: #826b48;
-  --navbar-dark-secondary: #52422d;
-  --navbar-light-primary: #52422d;
-  --navbar-light-secondary: #52422d;
+  --navbar-dark-primary: #18283b;
+  --navbar-dark-secondary: #2c3e50;
+  --navbar-light-primary: #f5f6fa;
+  --navbar-light-secondary: #8392a5;
 }
 
 html, body {
@@ -104,7 +65,9 @@ html, body {
   color: var(--navbar-light-primary);
   font-family: Verdana, Geneva, Tahoma, sans-serif;
   overflow: hidden;
-  user-select: none;
+  -webkit-user-select: none;
+     -moz-user-select: none;
+          user-select: none;
 }
 #nav-bar hr {
   margin: 0;
@@ -227,18 +190,6 @@ label[for=nav-toggle] {
   box-shadow: 16px -16px var(--background);
 }
 
-.logout-button{
-  color: var(--navbar-light-primary);
-  background-color: var(--navbar-dark-primary);
-  margin:0px 16px 16px 16px;
-  height: 40px;
-  border-radius: 10em;
-}
-.logout-button:hover{
-  background-color: var(--background);
-  transition: top 0.2s;
-}
-
 .nav-button {
   position: relative;
   margin-left: 16px;
@@ -316,7 +267,6 @@ label[for=nav-toggle] {
   width: var(--navbar-width);
   height: 54px;
   background: var(--navbar-dark-secondary);
-  color: var(--navbar-dark-primary);
   border-radius: 16px;
   display: flex;
   flex-direction: column;
@@ -333,7 +283,6 @@ label[for=nav-toggle] {
 }
 
 #nav-footer-avatar {
-  color: var(--navbar-dark-primary);
   position: relative;
   margin: 11px 0 11px 16px;
   left: 0;
@@ -344,21 +293,21 @@ label[for=nav-toggle] {
   transform: translate(0);
   transition: 0.2s;
 }
-#nav-footer-avatar i {
+#nav-footer-avatar img {
   height: 100%;
 }
 
 #nav-footer-titlebox {
   position: relative;
   margin-left: 16px;
-  width: 100px;
+  width: 10px;
   display: flex;
   flex-direction: column;
   transition: opacity 1s;
 }
 
 #nav-footer-subtitle {
-  color: var(--navbar-dark-primary);
+  color: var(--navbar-light-secondary);
   font-size: 0.6rem;
 }
 
@@ -383,9 +332,9 @@ label[for=nav-footer-toggle] {
 
 #nav-footer-content {
   margin: 0 16px 16px 16px;
-  border-top: solid 1px var(--navbar-dark-primary);
+  border-top: solid 1px var(--navbar-light-secondary);
   padding: 16px 0;
-  color: var(--navbar-dark-primary);
+  color: var(--navbar-light-secondary);
   font-size: 0.8rem;
   overflow: auto;
 }
@@ -395,6 +344,5 @@ label[for=nav-footer-toggle] {
 }
 #nav-footer-content::-webkit-scrollbar-thumb {
   border-radius: 99px;
-  background-color: var(--navbar-dark-primary);
-}
-</style>
+  background-color: #D62929;
+}/*# sourceMappingURL=sidebar.css.map */

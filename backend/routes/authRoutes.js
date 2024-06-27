@@ -61,6 +61,7 @@ router.post('/login', async (req, res) => {
     const token = jwt.sign({ userId: user.id_utilisateur }, 'votre_secret', { expiresIn: '1h' });
 
     res.json({ token });
+    console.log(token)
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur lors de la connexion' });
@@ -81,21 +82,22 @@ router.get('/app', authenticationToken, async (req,res)=>{
     res.status(201).json({ message: user});
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: req.user.userId });
+    res.status(500).json({ error: "Prout" });
   }
 });
 
 function authenticationToken(req,res,next){
   const autHeader = req.headers['authorization'];
   const token =autHeader && autHeader.split(' ')[1]; // jwt passe "bearer (token)" donc on split pour recup que le token  
+  
 
   if(!token){
-    return res.send.status(401);
+    return res.status(401);
   }
 
   jwt.verify(token, 'votre_secret',(err,user)=>{
       if(err){
-        return res.send.status(401);
+        return res.status(401);
       }
       req.user = user;
       next();
