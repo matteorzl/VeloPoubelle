@@ -67,4 +67,39 @@ router.post('/login', async (req, res) => {
   }
 });
 
+router.get('/app', authenticationToken, async (req,res)=>{
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT * FROM Utilisateur WHERE id_utilisateur = ?',
+      [req.user.userId]
+    );
+    connection.release();
+
+    const user = rows[0];
+
+    res.status(201).json({ message: user});
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: req.user.userId });
+  }
+});
+
+function authenticationToken(req,res,next){
+  const autHeader = req.headers['authorization'];
+  const token =autHeader && autHeader.split(' ')[1]; // jwt passe "bearer (token)" donc on split pour recup que le token  
+
+  if(!token){
+    return res.send.status(401);
+  }
+
+  jwt.verify(token, 'votre_secret',(err,user)=>{
+      if(err){
+        return res.send.status(401);
+      }
+      req.user = user;
+      next();
+  });
+}
+
 module.exports = router;

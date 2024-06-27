@@ -15,15 +15,32 @@
         <div id="nav-footer" class="font-bold">
             <div id="nav-footer-heading">
             <div id="nav-footer-avatar"><i class="fas fa-user"></i></div>
-            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">John Doe</a><span id="nav-footer-subtitle">Admin</span></div>
+            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">{{messages}}</a><span id="nav-footer-subtitle">Admin</span></div>
             <label for="nav-footer-toggle"><i class="fas fa-caret-up"></i></label>
             </div>
             <div id="nav-footer-content">
             <Lorem>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Lorem>
             </div>
+            <button class="logout-button">Déconnexion</button>
         </div>
     </div>
 </template>
+
+<script>
+import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:3000';
+
+export default{
+  data(){
+    return{
+      messages:["nom","prenom"]
+    };
+  },
+  async created(){
+    this.messages = (await axios.get("/api/app").data);
+  }
+}
+</script>
 
 <style lang="scss">
   @import "sidebar.sass";
@@ -217,6 +234,18 @@ label[for=nav-toggle] {
 #nav-content-highlight:after {
   top: 100%;
   box-shadow: 16px -16px var(--background);
+}
+
+.logout-button{
+  color: var(--navbar-light-primary);
+  background-color: var(--navbar-dark-primary);
+  margin:0px 16px 16px 16px;
+  height: 40px;
+  border-radius: 10em;
+}
+.logout-button:hover{
+  background-color: var(--background);
+  transition: top 0.2s;
 }
 
 .nav-button {

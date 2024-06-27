@@ -1,7 +1,7 @@
 <script setup>
 import { ref } from 'vue';
 import axios from 'axios';
-import router from './../router/index'
+import router from './ ../router/index'
 axios.defaults.baseURL = 'http://localhost:3000';
 
 const mail = ref('');
