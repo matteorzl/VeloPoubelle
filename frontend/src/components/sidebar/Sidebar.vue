@@ -15,7 +15,7 @@
         <div id="nav-footer" class="font-bold">
             <div id="nav-footer-heading">
             <div id="nav-footer-avatar"><i class="fas fa-user"></i></div>
-            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">{{nom}} {{prenom}}</a><span id="nav-footer-subtitle">Admin</span></div>
+            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">{{prenom + " " +nom}}</a><span id="nav-footer-subtitle">Admin</span></div>
             <label for="nav-footer-toggle"><i class="fas fa-caret-up"></i></label>
             </div>
             <div id="nav-footer-content">
@@ -327,7 +327,7 @@ label[for=nav-toggle] {
 #nav-footer-heading {
   position: relative;
   width: 100%;
-  height: 54px;
+  height: 60px;
   display: flex;
   align-items: center;
 }
@@ -335,13 +335,14 @@ label[for=nav-toggle] {
 #nav-footer-avatar {
   color: var(--navbar-dark-primary);
   position: relative;
-  margin: 11px 0 11px 16px;
+  margin: 11px 0 5px 5px;
   left: 0;
   width: 32px;
   height: 32px;
   border-radius: 50%;
   overflow: hidden;
   transform: translate(0);
+  padding-right:2.5em;
   transition: 0.2s;
 }
 #nav-footer-avatar i {
@@ -351,7 +352,7 @@ label[for=nav-toggle] {
 #nav-footer-titlebox {
   position: relative;
   margin-left: 16px;
-  width: 100px;
+  width: 100%;
   display: flex;
   flex-direction: column;
   transition: opacity 1s;
