@@ -1,3 +1,21 @@
+<script setup>
+import { defineProps} from 'vue';
+
+const props = defineProps({
+  nom: {
+    type: String,
+    required: false,
+    default: ''
+  },
+  prenom: {
+    type: String,
+    required: false,
+    default: ''
+  }
+})
+
+</script>
+
 <template>
     <link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css'><link rel="stylesheet" href="./style.css">
     <div id="nav-bar">
@@ -26,12 +44,6 @@
     </div>
 </template>
 
-<script>
-
-export default{
-  props:['nom','prenom']
-}
-</script>
 
 <style lang="scss">
   @import "sidebar.sass";
