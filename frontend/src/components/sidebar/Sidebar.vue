@@ -1,19 +1,23 @@
 <script setup>
-import { defineProps} from 'vue';
+  import { defineProps} from 'vue';
 
-const props = defineProps({
-  nom: {
-    type: String,
-    required: false,
-    default: ''
-  },
-  prenom: {
-    type: String,
-    required: false,
-    default: ''
-  }
-})
+  const props = defineProps({
+    nom: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    prenom: {
+      type: String,
+      required: false,
+      default: ''
+    }
+  })
 
+  async function logout() {
+            localStorage.removeItem('token');
+            this.$router.push('/login');
+      }
 </script>
 
 <template>
@@ -39,7 +43,7 @@ const props = defineProps({
             <div id="nav-footer-content">
             <Lorem>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Lorem>
             </div>
-            <button class="logout-button">Déconnexion</button>
+            <button class="logout-button" @click="logout">Déconnexion</button>
         </div>
     </div>
 </template>

@@ -1,30 +1,31 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import router from '../router/index'
-import axios from 'axios';
-axios.defaults.baseURL = "http://localhost:3000"
+  import { ref, onMounted } from 'vue'
+  import router from '../router/index'
+  import axios from 'axios';
+  axios.defaults.baseURL = "http://localhost:3000"
 
-if (localStorage.getItem("token") === null) {
-  router.push("/login")
-}
+  
+  if (localStorage.getItem("token") == null) {
+    router.push("/login")
+  }
+  
+  let user = ref(undefined)
 
-let user = ref(undefined)
+  async function getUser(){
+      await axios.get('/api/app', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    .then(res => {  
+      user.value = res.data.message;
+    })
+    .catch(error => {
+      console.error('Error fetching user data:', error);
+    });
+  }
 
-async function getUser(){
-    await axios.get('/api/app', {
-    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+  onMounted(async() => {
+      await getUser();
   })
-  .then(res => {  
-    user.value = res.data.message;
-  })
-  .catch(error => {
-    console.error('Error fetching user data:', error);
-  });
-}
-
-onMounted(async() => {
-    await getUser();
-})
 
 </script>
 

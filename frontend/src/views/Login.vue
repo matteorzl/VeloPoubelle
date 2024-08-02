@@ -1,40 +1,40 @@
 <script setup>
-import { ref } from 'vue';
-import axios from 'axios';
-import router from '../router/index'
-axios.defaults.baseURL = 'http://localhost:3000';
+    import { ref } from 'vue';
+    import axios from 'axios';
+    import router from '../router/index'
+    axios.defaults.baseURL = 'http://localhost:3000';
 
-const mail = ref('');
-const password = ref('');
-const error = ref(null);
-let serverResponse = ref('')
+    const mail = ref('');
+    const password = ref('');
+    const error = ref(null);
+    let serverResponse = ref('')
 
-const login = async () => {
-    error.value = null; 
+    const login = async () => {
+        error.value = null; 
 
-    try {
-        const response = await axios.post('/api/login', {
-            email: mail.value,
-            mot_de_passe: password.value 
-        });
+        try {
+            const response = await axios.post('/api/login', {
+                email: mail.value,
+                mot_de_passe: password.value 
+            });
 
-        localStorage.setItem('token', response.data.token);
+            localStorage.setItem('token', response.data.token);
 
-        serverResponse.value = response.status
+            serverResponse.value = response.status
 
-        if (response.status === 200) {
+            if (response.status === 200) {
+                setTimeout(() => {
+                    router.push('/app');
+                }, 2000); 
+            }
+        } catch (err) {
+            serverResponse.value = '401'
             setTimeout(() => {
-                router.push('/app');
-            }, 2000); 
+                error.value = err.response?.data?.error || 'Erreur lors de la connexion';
+                serverResponse.value = ''
+            }, 2000);
         }
-    } catch (err) {
-        serverResponse.value = '401'
-        setTimeout(() => {
-            error.value = err.response?.data?.error || 'Erreur lors de la connexion';
-            serverResponse.value = ''
-        }, 2000);
-    }
-};
+    };
 </script>
 
 <template>
@@ -64,7 +64,7 @@ const login = async () => {
                         <a class="font-medium underline ml-2 text-right cursor-pointer">Mot de passe oublié ?</a>
                     </div>
                     <Button v-if="serverResponse !== 200 && serverResponse !== '401'" label="Se connecter" type="submit" rounded class="w-full bg-[#2B2318]"></Button>
-                    <ProgressSpinner v-if="serverResponse === 200 || serverResponse.length > 2 && !error" style="width: 50px; height: 50px;top:45%;left:45%" strokeWidth="8" fill="transparent"animationDuration=".5s" aria-label="Custom ProgressSpinner"/>
+                    <ProgressSpinner v-if="serverResponse === 200 || serverResponse.length > 2 && !error" style="width: 50px; height: 50px;top:45%;left:45%" strokeWidth="8" fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner"/>
 
                     <div v-if="error" class="error">{{ error }}</div>
                 </div>
