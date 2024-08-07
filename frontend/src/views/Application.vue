@@ -9,30 +9,36 @@
     router.push("/login")
   }
   
-  let user = ref(undefined)
+  const isLoading = ref(true);
+  const user = ref(undefined)
 
   async function getUser(){
-      await axios.get('/api/app', {
+    try{
+      const resp = await axios.get('/api/app', {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
-    .then(res => {  
-      user.value = res.data.message;
-    })
-    .catch(error => {
+      user.value = resp.data.message;
+    }
+    catch(error) {
       console.error('Error fetching user data:', error);
-    });
+    };
   }
-
-  onMounted(async() => {
-      await getUser();
-  })
+  
+  onMounted(getUser)
+  getUser().then(() => {
+  isLoading.value = false;
+  
+});
 
 </script>
 
 <template>
-    <div>
-        <Sidebar :nom="user?.nom" :prenom="user?.prenom"/>
-
-        <div style="background-color: black !important; width: 900px; height: 1244px; margin-left: 25%; margin-top: 1%"></div>
-    </div>
+  <div v-if="isLoading">
+    <ProgressSpinner style="width: 100px; height: 100px;top:50%;left:47%;margin-top: 20%;" strokeWidth="8" fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner"/>
+    <p style="text-align: center; font-size: large;">Chargement des données utilisateur...</p>
+  </div>
+  <div v-else>
+    <Sidebar :nom="user?.nom" :prenom="user?.prenom" />
+    <div style="background-color: #52422d !important; width: 900px; height: 1244px; margin-left: 25%; margin-top: 1%;border-radius:2em"></div>
+  </div>
 </template>

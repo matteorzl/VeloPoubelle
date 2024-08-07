@@ -1,5 +1,6 @@
 <script setup>
-  import { defineProps} from 'vue';
+  import { resolveModuleName } from 'typescript';
+import { defineProps} from 'vue';
 
   const props = defineProps({
     nom: {
@@ -15,9 +16,10 @@
   })
 
   async function logout() {
-            localStorage.removeItem('token');
-            this.$router.push('/login');
-      }
+    localStorage.removeItem('token');
+    window.location.reload();
+
+  }
 </script>
 
 <template>
