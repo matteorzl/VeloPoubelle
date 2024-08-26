@@ -71,7 +71,7 @@ router.get('/app', authenticationToken, async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      'SELECT nom, prenom FROM Utilisateur WHERE id_utilisateur = ?', 
+      'SELECT nom, prenom, role FROM Utilisateur WHERE id_utilisateur = ?', 
       [req.user.userId] // Fetch only the necessary fields
     );
     connection.release();

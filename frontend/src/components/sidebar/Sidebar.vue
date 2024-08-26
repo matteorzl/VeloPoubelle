@@ -12,6 +12,11 @@ import { defineProps} from 'vue';
       type: String,
       required: false,
       default: ''
+    },
+    role: {
+      type: String,
+      required: false,
+      default: ''
     }
   })
 
@@ -31,21 +36,74 @@ import { defineProps} from 'vue';
             <label for="nav-toggle"><span id="nav-toggle-burger"></span></label>
             <hr/>
         </div>
-        <div id="nav-content" class="font-bold">
-            <div class="nav-button"><i class="fas fa-bicycle"></i><span>Vos trajets</span></div>
-            <div id="nav-content-highlight"></div>
+
+        <!-- Si role est cycliste -->
+        <div v-if="role == 'cycliste'">
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Mon trajet</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Incident</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
         </div>
+
+        <!-- Si role est rh -->
+        <div v-if="role == 'rh'">
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Ajouter</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Modifier</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+        </div>
+
+        <!-- Si role est admin -->
+        <div v-if="role == 'admin'">
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Cyclistes</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">RHs</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Gestionnaires</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+        </div>
+
+
+        <!-- Si role est gestionnaire -->
+        <div v-if="role == 'gestionnaire'">
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Tournées</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Incidents</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+          <div  id="nav-content" class="font-bold">
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Voir les rues</span></div>
+              <div id="nav-content-highlight"></div>
+          </div>
+        </div>
+
         <input id="nav-footer-toggle" type="checkbox"/>
         <div id="nav-footer" class="font-bold">
             <div id="nav-footer-heading">
             <div id="nav-footer-avatar"><i class="fas fa-user"></i></div>
-            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">{{prenom + " " +nom}}</a><span id="nav-footer-subtitle">Admin</span></div>
+            <div id="nav-footer-titlebox"><a id="nav-footer-title" href="https://codepen.io/uahnbu/pens/public" target="_blank">{{prenom + " " +nom}}</a><span id="nav-footer-subtitle">{{ role }}</span></div>
             <label for="nav-footer-toggle"><i class="fas fa-caret-up"></i></label>
             </div>
             <div id="nav-footer-content">
-            <Lorem>ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</Lorem>
+              <button class="logout-button" @click="logout">Déconnexion</button>
             </div>
-            <button class="logout-button" @click="logout">Déconnexion</button>
         </div>
     </div>
 </template>
@@ -216,14 +274,13 @@ label[for=nav-toggle] {
 }
 #nav-content::-webkit-scrollbar-thumb {
   border-radius: 99px;
-  background-color: #D62929;
+  background-color: var(--navbar-dark-secondary);
 }
 
 #nav-content-highlight {
   position: absolute;
   left: 16px;
   top: -70px;
-  width: calc(100% - 16px);
   height: 54px;
   background: var(--background);
   background-attachment: fixed;
@@ -248,13 +305,13 @@ label[for=nav-toggle] {
 .logout-button{
   color: var(--navbar-light-primary);
   background-color: var(--navbar-dark-primary);
-  margin:0px 16px 16px 16px;
-  height: 40px;
-  border-radius: 10em;
+  border-radius: 5em;
+  padding: 1px 0px 10px 0px;
+  width: 100%;
+  height: 100%;
 }
 .logout-button:hover{
   background-color: var(--background);
-  transition: top 0.2s;
 }
 
 .nav-button {
@@ -330,7 +387,8 @@ label[for=nav-toggle] {
 }
 
 #nav-footer {
-  position: relative;
+  bottom: 0;
+  position: fixed;
   width: var(--navbar-width);
   height: 54px;
   background: var(--navbar-dark-secondary);
@@ -382,7 +440,7 @@ label[for=nav-toggle] {
 }
 
 #nav-footer-toggle:checked + #nav-footer {
-  height: 30%;
+  height: 10%;
   min-height: 54px;
 }
 #nav-footer-toggle:checked + #nav-footer label[for=nav-footer-toggle] {
@@ -403,10 +461,8 @@ label[for=nav-footer-toggle] {
 #nav-footer-content {
   margin: 0 16px 16px 16px;
   border-top: solid 1px var(--navbar-dark-primary);
-  padding: 16px 0;
   color: var(--navbar-dark-primary);
-  font-size: 0.8rem;
-  overflow: auto;
+  font-size: 1rem;
 }
 #nav-footer-content::-webkit-scrollbar {
   width: 8px;
