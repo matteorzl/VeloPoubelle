@@ -103,4 +103,20 @@ function authenticationToken(req,res,next){
   });
 }
 
+router.get('/utilisateurs', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT id_utilisateur, nom, prenom, email, role FROM Utilisateur' // Select only necessary fields
+    );
+    connection.release();
+
+    res.status(200).json(rows); // Send the sanitized user data
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 module.exports = router;

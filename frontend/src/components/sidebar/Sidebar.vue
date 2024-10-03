@@ -44,7 +44,7 @@ import { defineProps} from 'vue';
               <div id="nav-content-highlight"></div>
           </div>
           <div  id="nav-content" class="font-bold">
-              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/graph">Incident</span></div>
+              <div class="nav-button"><i class="fas fa-bicycle"></i><span to="/Utilisateurs">Incident</span></div>
               <div id="nav-content-highlight"></div>
           </div>
         </div>

@@ -52,8 +52,8 @@
                         <InputText class="w-full" id="mail" required v-model="mail" />
                         <label for="mail">Adresse e-mail</label>
                     </FloatLabel>
-                    <FloatLabel class="mb-6">
-                        <InputText class="w-full" id="password" required v-model="password" />
+                    <FloatLabel class="mb-6" >
+                        <InputText type="password" class="w-full" id="password" required v-model="password" />
                         <label for="password">Mot de passe</label>
                     </FloatLabel>
                     <div class="flex align-items-center justify-content-between mb-6">
