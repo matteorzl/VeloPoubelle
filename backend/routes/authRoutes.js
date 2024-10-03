@@ -103,7 +103,7 @@ function authenticationToken(req,res,next){
   });
 }
 
-router.get('/utilisateurs', async (req, res) => {
+router.get('/users', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
