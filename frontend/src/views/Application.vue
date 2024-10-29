@@ -39,7 +39,8 @@ if (localStorage.getItem("token") === null) {
     <p style="text-align: center; font-size: large;">Chargement des données utilisateur...</p>
   </div>
   <div v-else>
-    <Sidebar :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
+    <test :nom="user?.nom" :prenom="user?.prenom" :role="user?.role"/>
+    <!--<Sidebar :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />-->
     <div style="background-color: #52422d !important; width: 900px; height: 1244px; margin-left: 25%; margin-top: 1%;border-radius:2em"></div>
   </div>
 </template>

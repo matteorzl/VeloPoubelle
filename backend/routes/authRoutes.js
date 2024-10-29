@@ -118,5 +118,51 @@ router.get('/users', async (req, res) => {
   }
 });
 
+router.get('/user/:id', async (req, res) => {
+  try {
+    const userId = req.params.id; // Extract the user ID from the URL parameter
+
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT id_utilisateur, nom, prenom, email, role FROM Utilisateur WHERE id_utilisateur = ?',
+      [userId] // Bind the user ID to the query
+    );
+    connection.release();
+
+    if (rows.length === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json(rows[0]); // Send the first (and only) user object
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.put('/users/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { nom, prenom, email, role } = req.body;
+
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      'UPDATE Utilisateur SET nom = ?, prenom = ?, email = ?, role = ? WHERE id_utilisateur = ?',
+      [nom, prenom, email, role, userId]
+    );
+    connection.release();
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User updated successfully' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({   
+ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router;
