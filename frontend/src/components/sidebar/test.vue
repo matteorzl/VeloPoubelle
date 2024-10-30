@@ -61,7 +61,7 @@ const toggleNavbar = () => {
                 <i class="bx bx-cycling"></i>
                 <span class="nav_name">Mon trajet</span>
                 </a>
-                <a href="#" class="nav_link">
+                <a href="/users" class="nav_link">
                 <i class="bx bx-user nav_icon"></i>
                 <span class="nav_name">Utilisateurs</span>
                 </a>
@@ -177,7 +177,7 @@ a {
 }
 .nav_link {
   position: relative;
-  color: var(--first-color-light);
+  color: var(--white-color);
   margin-bottom: 1.5rem;
   transition: .3s;
 }

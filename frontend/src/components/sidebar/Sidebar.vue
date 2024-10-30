@@ -45,7 +45,7 @@ import { defineProps} from 'vue';
               <div id="nav-content-highlight"></div>
           </div>
           <div  id="nav-content" class="font-bold">
-              <router-link class="nav-button" :to="{name:'Users'}" ><i class="fas fa-bicycle"></i><span>Utilisateurs</span></router-link>
+              <router-link :to="{ path: '/users'}" class="nav-button"><i class="fas fa-bicycle"></i><span>Utilisateurs</span></router-link>
               <div id="nav-content-highlight"></div>
           </div>
         </div>
