@@ -14,9 +14,9 @@
         <label for="role">Rôle :</label>
         <select id="role" v-model="user.role">
             <option value="cycliste">Cycliste</option>
-            <option value="rh">RH</option>
-            <option value="admin">Admin</option>
-            <option value="gestionnaire">Gestionnaire</option>
+            <option value="RH">RH</option>
+            <option value="administrateur">Admin</option>
+            <option value="gestionnaire_reseau">Gestionnaire</option>
         </select>
   
         <button type="submit">Enregistrer</button>
@@ -28,9 +28,9 @@
   </template>
   
   <script>
-
   import axios from 'axios';
-axios.defaults.baseURL = 'http://localhost:3000';
+  import router from './../router/index'
+  axios.defaults.baseURL = 'http://localhost:3000';
 
 export default{
     name:'User',
@@ -50,15 +50,23 @@ export default{
             });
         },
         updateUser() {
-            axios.put('api/user/'+this.$route.params.id, this.user)
-            .then(response => {
-            // Gérer la réponse après la mise à jour
-            console.log('Utilisateur mis à jour avec succès');
-            })
-            .catch(error => {
-            console.error(error);
-            });
-    }
-    }
-}
+        const updatedUser = {
+          nom: this.user.nom,
+          prenom: this.user.prenom,
+          email: this.user.email,
+          role: this.user.role,
+        };
+
+      axios.put(`/api/user/${this.$route.params.id}`, updatedUser) // Send entire object
+        .then((res) => {
+          console.log('User updated successfully:', res.data); // Consider using success message
+          router.push('../users');// Optionally handle successful update (e.g., redirect, display success message)
+        })
+        .catch((error) => {
+          console.error('Error updating user:', error.response?.data); // Access error details from response
+          // Handle errors appropriately (e.g., display error message to user)
+        });
+    },
+  },
+};
   </script>

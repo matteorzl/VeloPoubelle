@@ -140,9 +140,10 @@ router.get('/user/:id', async (req, res) => {
   }
 });
 
-router.put('/users/:id', async (req, res) => {
+router.put('/user/:id', async (req, res) => {
   try {
     const userId = req.params.id;
+
     const { nom, prenom, email, role } = req.body;
 
     const connection = await pool.getConnection();
@@ -160,7 +161,7 @@ router.put('/users/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({   
- error: 'Internal Server Error' });
+ error: 'Internal Server Error'});
   }
 });
 

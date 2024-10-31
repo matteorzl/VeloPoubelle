@@ -20,7 +20,7 @@
                                 <td>{{user.prenom}}</td>
                                 <td>{{user.email}}</td>
                                 <td>{{user.role}}</td>
-                                <td><router-link :to="{ path: '/users/'+ user.id_utilisateur}" class="btn btn-success float-end">Modifier</router-link></td>
+                                <td><router-link :to="{ path: '/user/'+ user.id_utilisateur}" class="btn btn-success float-end">Modifier</router-link></td>
                               </tr>
                           </tbody>
                         </table>

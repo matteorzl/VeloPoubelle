@@ -67,7 +67,7 @@ const router = createRouter({
       component: Users
     },
     {
-      path: '/users/:id',
+      path: '/user/:id',
       name: 'User',
       // route level code-splitting
       // this generates a separate chunk (About.[hash].js) for this route
