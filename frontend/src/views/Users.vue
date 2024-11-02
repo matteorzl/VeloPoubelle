@@ -3,13 +3,13 @@
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
                 <div class="panel panel-default">
-                    <div class="panel-heading">List of users</div>
+                    <div class="panel-heading">Listes des utilisateurs</div>
                     <div class="panel-body">
                         <table class="table">
                             <thead>
                               <tr>
-                                <th>Firstname</th>
-                                <th>Lastname</th>
+                                <th>Nom</th>
+                                <th>Prénom</th>
                                 <th>Email</th>
                                 <th>Role</th>
                               </tr>

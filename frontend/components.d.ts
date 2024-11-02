@@ -15,6 +15,7 @@ declare module 'vue' {
     ProgressSpinner: typeof import('primevue/progressspinner')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    Select: typeof import('primevue/select')['default']
     Sidebar: typeof import('./src/components/sidebar/Sidebar.vue')['default']
     Test: typeof import('./src/components/sidebar/test.vue')['default']
   }
