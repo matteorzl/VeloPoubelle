@@ -7,6 +7,7 @@ import { definePreset } from '@primevue/themes';
 import Aura from '@primevue/themes/aura';
 import App from './App.vue'
 import router from './router'
+import 'leaflet/dist/leaflet.css';
 
 const app = createApp(App)
 
@@ -59,6 +60,12 @@ const Noir = definePreset(Aura, {
 });
 
 app.use(PrimeVue, {
+    zIndex: {
+        modal: 1100,        //dialog, drawer
+        overlay: 1000,      //select, popover
+        menu: 1000,       //overlay menus
+        tooltip: 1100       //tooltip
+    },
     // Default theme configuration
     theme: {
         preset: Noir,
@@ -72,6 +79,7 @@ app.use(PrimeVue, {
             darkModeSelector: '.my-app-dark',
             cssLayer: false
         }
+        
     }
  });
 

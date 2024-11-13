@@ -165,5 +165,27 @@ router.put('/user/:id', async (req, res) => {
   }
 });
 
+router.delete('/user/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      'DELETE FROM Utilisateur WHERE id_utilisateur = ?',
+      [userId]
+    );
+    connection.release();
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = router;
