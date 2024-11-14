@@ -1,0 +1,30 @@
+{
+    "center": { "lat": 48.8670, "lng": 2.3700 },
+    "zoom": 12,
+    "stations": [
+      { "name": "Bobigny-Pablo Picasso", "lat": 48.9075, "lng": 2.4331 },
+      { "name": "Bobigny-Pantin-Raymond", "lat": 48.9042, "lng": 2.4212 },
+      { "name": "Queneau", "lat": 48.8995, "lng": 2.4130 },
+      { "name": "Église de Pantin", "lat": 48.8997, "lng": 2.4056 },
+      { "name": "Hoche", "lat": 48.8955, "lng": 2.3985 },
+      { "name": "Porte de Pantin", "lat": 48.8920, "lng": 2.3898 },
+      { "name": "Ourcq", "lat": 48.8891, "lng": 2.3821 },
+      { "name": "Laumière", "lat": 48.8844, "lng": 2.3759 },
+      { "name": "Jaurès", "lat": 48.8823, "lng": 2.3727 },
+      { "name": "Stalingrad", "lat": 48.8792, "lng": 2.3679 },
+      { "name": "Gare du Nord", "lat": 48.8800, "lng": 2.3556 },
+      { "name": "Gare de l'Est", "lat": 48.8762, "lng": 2.3575 },
+      { "name": "Jacques Bonsergent", "lat": 48.8711, "lng": 2.3597 },
+      { "name": "République", "lat": 48.8670, "lng": 2.3622 },
+      { "name": "Oberkampf", "lat": 48.8644, "lng": 2.3715 },
+      { "name": "Richard-Lenoir", "lat": 48.8633, "lng": 2.3748 },
+      { "name": "Bréguet-Sabin", "lat": 48.8619, "lng": 2.3752 },
+      { "name": "Bastille", "lat": 48.8532, "lng": 2.3693 },
+      { "name": "Quai de la Rapée", "lat": 48.8456, "lng": 2.3702 },
+      { "name": "Gare d'Austerlitz", "lat": 48.8422, "lng": 2.3708 },
+      { "name": "Saint-Marcel", "lat": 48.8413, "lng": 2.3659 },
+      { "name": "Campo-Formio", "lat": 48.8390, "lng": 2.3582 },
+      { "name": "Place d'Italie", "lat": 48.8328, "lng": 2.3512 }
+    ]
+  }
+  
