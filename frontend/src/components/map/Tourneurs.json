@@ -1,0 +1,10 @@
+{
+    "center": { "lat": 48.8595, "lng": 2.3531 },
+    "zoom": 13,
+    "stations": [
+      { "name": "Gare du Nord", "lat": 48.8801, "lng": 2.3550 },
+      { "name": "Châtelet-Les Halles", "lat": 48.8600, "lng": 2.3499 },
+      { "name": "Gare de Lyon", "lat": 48.8448, "lng": 2.3747 }
+    ]
+  }
+  

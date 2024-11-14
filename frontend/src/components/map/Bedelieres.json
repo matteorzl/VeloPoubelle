@@ -1,0 +1,29 @@
+{
+    "center": { "lat": 48.8332, "lng": 2.3416 },
+    "zoom": 13,
+    "stations": [
+      { "name": "Pont du Garigliano", "lat": 48.8325, "lng": 2.2725 },
+      { "name": "Balard", "lat": 48.8292, "lng": 2.2758 },
+      { "name": "Desnouettes", "lat": 48.8286, "lng": 2.2790 },
+      { "name": "Porte de Versailles", "lat": 48.8320, "lng": 2.2890 },
+      { "name": "Georges Brassens", "lat": 48.8263, "lng": 2.2920 },
+      { "name": "Brancion", "lat": 48.8239, "lng": 2.2961 },
+      { "name": "Porte de Vanves", "lat": 48.8191, "lng": 2.3034 },
+      { "name": "Didot", "lat": 48.8201, "lng": 2.3103 },
+      { "name": "Jean Moulin", "lat": 48.8234, "lng": 2.3167 },
+      { "name": "Porte d'Orléans", "lat": 48.8259, "lng": 2.3207 },
+      { "name": "Montsouris", "lat": 48.8255, "lng": 2.3265 },
+      { "name": "Cité universitaire", "lat": 48.8259, "lng": 2.3353 },
+      { "name": "Stade Charléty", "lat": 48.8294, "lng": 2.3411 },
+      { "name": "Poterne des Peupliers", "lat": 48.8366, "lng": 2.3417 },
+      { "name": "Porte d'Italie", "lat": 48.8324, "lng": 2.3507 },
+      { "name": "Porte de Choisy", "lat": 48.8237, "lng": 2.3590 },
+      { "name": "Porte d'Ivry", "lat": 48.8179, "lng": 2.3703 },
+      { "name": "Bibliothèque François Mitterrand", "lat": 48.8329, "lng": 2.3744 },
+      { "name": "Porte de Charenton", "lat": 48.8373, "lng": 2.3846 },
+      { "name": "Porte Dorée", "lat": 48.8402, "lng": 2.3972 },
+      { "name": "Montempoivre", "lat": 48.8473, "lng": 2.4034 },
+      { "name": "Porte de Vincennes", "lat": 48.8474, "lng": 2.4063 }
+    ]
+  }
+  

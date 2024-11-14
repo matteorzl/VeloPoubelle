@@ -1,0 +1,27 @@
+{
+    "center": { "lat": 48.8445, "lng": 2.3131 },
+    "zoom": 13,
+    "stations": [
+      { "name": "Boulogne-Pont de Saint-Cloud", "lat": 48.8409, "lng": 2.2471 },
+      { "name": "Boulogne-Jean Jaurès", "lat": 48.8412, "lng": 2.2546 },
+      { "name": "Porte d'Auteuil", "lat": 48.8400, "lng": 2.2557 },
+      { "name": "Michel-Ange-Auteuil", "lat": 48.8436, "lng": 2.2535 },
+      { "name": "Église d'Auteuil", "lat": 48.8472, "lng": 2.2525 },
+      { "name": "Javel-André Citroën", "lat": 48.8413, "lng": 2.2807 },
+      { "name": "Charles Michels", "lat": 48.8416, "lng": 2.2880 },
+      { "name": "Avenue Émile Zola", "lat": 48.8501, "lng": 2.2895 },
+      { "name": "La Motte-Picquet-Grenelle", "lat": 48.8491, "lng": 2.2950 },
+      { "name": "Ségur", "lat": 48.8449, "lng": 2.3141 },
+      { "name": "Duroc", "lat": 48.8431, "lng": 2.3212 },
+      { "name": "Vaneau", "lat": 48.8444, "lng": 2.3237 },
+      { "name": "Sèvres-Babylone", "lat": 48.8511, "lng": 2.3224 },
+      { "name": "Mabillon", "lat": 48.8534, "lng": 2.3350 },
+      { "name": "Odéon", "lat": 48.8535, "lng": 2.3385 },
+      { "name": "Cluny-La Sorbonne", "lat": 48.8484, "lng": 2.3449 },
+      { "name": "Maubert-Mutualité", "lat": 48.8481, "lng": 2.3530 },
+      { "name": "Cardinal Lemoine", "lat": 48.8470, "lng": 2.3587 },
+      { "name": "Jussieu", "lat": 48.8445, "lng": 2.3594 },
+      { "name": "Gare d'Austerlitz", "lat": 48.8430, "lng": 2.3744 }
+    ]
+  }
+  

@@ -1,10 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
 import Login from '@/views/Login.vue';
 import Register from '@/views/Register.vue';
-import Test from '@/views/Test.vue';
 import Application from '@/views/Application.vue';
-import Leaflet from '@/views/Leaflet.vue';
-import TestGraph from '@/views/TestGraph.vue';
+import Map from '@/views/Map.vue';
 import Users from '@/views/Users.vue';
 
 const router = createRouter({
@@ -35,14 +33,9 @@ const router = createRouter({
           component: Users
         },
         {
-          path: 'graph', // `/app/graph`
-          name: 'graph',
-          component: TestGraph
-        },
-        {
-          path: 'graphtest', // `/app/graph`
-          name: 'graphtest',
-          component: Leaflet
+          path: 'map', // `/app/map`
+          name: 'map',
+          component: Map
         },
         {
           path: 'users', // `/app/users`

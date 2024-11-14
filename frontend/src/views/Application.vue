@@ -2,9 +2,7 @@
 import { ref, onBeforeMount, provide } from 'vue'
 import router from '../router/index'
 import axios from 'axios'
-import test from '../components/sidebar/test.vue'
-import TestGraph from './TestGraph.vue'
-import Users from './Users.vue'
+import Sidebar from '../components/sidebar/Sidebar.vue'
 
 axios.defaults.baseURL = "http://localhost:3000"
 
@@ -49,7 +47,7 @@ onBeforeMount(() => {
   <div v-else>
     <div :class="{ 'content-shifted': isNavVisible }">
       <!-- Sidebar -->
-      <test :id="user?.id_utilisateur" :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
+      <Sidebar :id="user?.id_utilisateur" :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
       
       <!-- Contenu principal où les sous-composants seront chargés -->
       <div class="flex items-center justify-center h-screen" style="background-color: #e4dfd0 !important;">

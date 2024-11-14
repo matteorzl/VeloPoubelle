@@ -1,0 +1,33 @@
+{
+    "center": { "lat": 48.9155, "lng": 2.4331 },
+    "zoom": 13,
+    "stations": [
+      { "name": "Gare Saint-Denis", "lat": 48.9384, "lng": 2.3587 },
+      { "name": "Théâtre Gérard Philipe", "lat": 48.9337, "lng": 2.3569 },
+      { "name": "Marché de Saint-Denis", "lat": 48.9301, "lng": 2.3589 },
+      { "name": "Basilique de Saint-Denis", "lat": 48.9364, "lng": 2.3570 },
+      { "name": "Cimetière de Saint-Denis", "lat": 48.9294, "lng": 2.3527 },
+      { "name": "Hôpital Delafontaine", "lat": 48.9272, "lng": 2.3447 },
+      { "name": "Cosmonautes", "lat": 48.9331, "lng": 2.4139 },
+      { "name": "La Courneuve-Six Routes", "lat": 48.9271, "lng": 2.4313 },
+      { "name": "Hôtel de Ville de La Courneuve", "lat": 48.9352, "lng": 2.4327 },
+      { "name": "Stade Géo André", "lat": 48.9287, "lng": 2.4278 },
+      { "name": "Danton", "lat": 48.9138, "lng": 2.4345 },
+      { "name": "La Courneuve-8 Mai 1945", "lat": 48.9097, "lng": 2.3735 },
+      { "name": "Maurice Lachâtre", "lat": 48.9119, "lng": 2.3618 },
+      { "name": "Drancy-Avenir", "lat": 48.9202, "lng": 2.4794 },
+      { "name": "Hôpital Avicenne", "lat": 48.9251, "lng": 2.4684 },
+      { "name": "Gaston Roulaud", "lat": 48.9276, "lng": 2.4448 },
+      { "name": "Escadrille Normandie-Niémen", "lat": 48.9305, "lng": 2.4189 },
+      { "name": "La Ferme", "lat": 48.9267, "lng": 2.4294 },
+      { "name": "Libération", "lat": 48.9238, "lng": 2.4264 },
+      { "name": "Hôtel de Ville de Bobigny", "lat": 48.9052, "lng": 2.4334 },
+      { "name": "Bobigny-Pablo Picasso", "lat": 48.9014, "lng": 2.4514 },
+      { "name": "Jean Rostand", "lat": 48.9032, "lng": 2.4729 },
+      { "name": "Auguste Delaune", "lat": 48.9045, "lng": 2.4637 },
+      { "name": "Pont de Bondy", "lat": 48.9106, "lng": 2.4532 },
+      { "name": "Petit Noisy", "lat": 48.8978, "lng": 2.4597 },
+      { "name": "Noisy-le-Sec", "lat": 48.8933, "lng": 2.5083 }
+    ]
+  }
+  
