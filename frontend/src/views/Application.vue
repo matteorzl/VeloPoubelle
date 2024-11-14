@@ -8,16 +8,13 @@ import Users from './Users.vue'
 
 axios.defaults.baseURL = "http://localhost:3000"
 
-if (localStorage.getItem("token") === null) {
-    router.push("/login")
-}
-
 const isLoading = ref(true)
 const user = ref(undefined)
 const menu = 2
 
 // Créer la référence isNavVisible pour contrôler la visibilité de la sidebar
 const isNavVisible = ref(false)
+console.log(localStorage.getItem("token"))
 
 // Fournir isNavVisible pour le rendre disponible aux composants enfants
 provide('isNavVisible', isNavVisible)
@@ -39,7 +36,6 @@ async function getUser(){
     isLoading.value = false
     }
   }
- 
 onBeforeMount(() => {
   getUser()
 })
@@ -53,7 +49,7 @@ onBeforeMount(() => {
   <div v-else>
     <div :class="{ 'content-shifted': isNavVisible }">
       <!-- Sidebar -->
-      <test :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
+      <test :id="user?.id_utilisateur" :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
       
       <!-- Contenu principal où les sous-composants seront chargés -->
       <div class="flex items-center justify-center h-screen" style="background-color: #e4dfd0 !important;">

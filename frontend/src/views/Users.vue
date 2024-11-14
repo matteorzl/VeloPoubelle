@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onMounted } from 'vue';
+  import { ref, onMounted} from 'vue';
   import axios from 'axios';
   axios.defaults.baseURL = 'http://localhost:3000';
   import Dialog from 'primevue/dialog';
@@ -7,7 +7,8 @@
   import FloatLabel from 'primevue/floatlabel';
 
   const users = ref([]);
-  const user = ref(undefined);
+  const actualUser = ref(undefined)
+  const user = ref('');
   const lastName = ref('');
   const firstName = ref('')
   const mail = ref('');
@@ -25,12 +26,34 @@
   const position = ref('center');
   const visible = ref(false);
 
-  const roles = ref([
+  const Adminroles = ref([
     { name: 'Cycliste', value:'cycliste' },
     { name: 'RH', value:'RH' },
     { name: 'Admin', value:'administrateur' },
     { name: 'Gestionnaire', value:'gestionnaire_reseau' }
   ]);
+
+  const Rhroles = ref([
+    { name: 'Cycliste', value:'cycliste' },
+    { name: 'RH', value:'RH' },
+    { name: 'Gestionnaire', value:'gestionnaire_reseau' }
+  ]);
+
+  async function getActualUser(){
+  if(localStorage.getItem("token")) {
+    try{
+      const resp = await axios.get('/api/app', {
+        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+      })
+      actualUser.value = resp.data.message
+    }
+    catch(error) {
+      console.error('Error fetching user data:', error)
+    }
+  }else{
+    router.push("/login")
+    }
+  }
 
   async function getUsers(){
     try{
@@ -45,7 +68,7 @@
 
   const modifyUser = async (id,pos) => {
     try {
-        const res = await axios.get(`api/user/${id}`);
+        const res = await axios.get(`api/user/${id}`); 
         user.value = res.data;
         position.value = pos;
         visible.value = true;
@@ -104,7 +127,6 @@
   };
 
   const onCreate = async () => {
-    console.log(lastName.value,firstName.value,mail.value,password.value,userrole.value.value)
     try {
       const response = await axios.post('/api/register', {
         nom: lastName.value,
@@ -124,6 +146,7 @@
   };
 
   onMounted(() => {
+    getActualUser();
     getUsers();
 });
 </script>
@@ -169,22 +192,26 @@
     </Dialog>
 
     <Dialog v-model:visible="showDialogModify" header="Modifier l'utilisateur" :style="{ width: '40%', backgroundColor: '#52422d', color: '#F7F6FB', borderColor:'#52422d' }" :position="position" :modal="true" :closable="false">
-      <div class="relative column wrap align-content-end" :style="{height:'20.5rem'}">
+      <div class="relative column wrap align-content-end" :style="{height:'18.5rem'}">
         <div class="w-7/8">
-          <FloatLabel class="mb-6">
+          <FloatLabel class="mb-4">
             <InputText class="custominput w-full" id="prenom" required v-model="user.prenom"/>
             <label for="prenom" class="customlabel">Prénom</label>
           </FloatLabel>
-          <FloatLabel class="mb-6">
+          <FloatLabel class="mb-4">
             <InputText class="custominput w-full" id="nom" required v-model="user.nom"/>
             <label for="nom" class="customlabel">Nom</label>
           </FloatLabel>
-          <FloatLabel class="mb-6">
+          <FloatLabel class="mb-4">
             <InputText class="custominput w-full" id="mail" required v-model="user.email"/>
             <label for="mail" class="customlabel">Adresse e-mail</label>
           </FloatLabel>
-          <FloatLabel>
-            <Select v-model="user.role" inputId="role" :options="roles" optionLabel="name" :placeholder="user.role" checkmark :highlightOnSelect="false" class="custominput w-full md:w-56" appendTo="body"></Select>
+          <FloatLabel class="mb-4" v-if="actualUser.role === 'administrateur'">
+            <Select v-model="user.role" inputId="role" :options="Adminroles" optionLabel="name" :placeholder="user.role" checkmark :highlightOnSelect="false" class="custominput w-full md:w-56" appendTo="body"></Select>
+            <label for="role" class="customlabel">Role</label>
+          </FloatLabel>
+          <FloatLabel class="mb-4" v-else>
+            <Select v-model="user.role" inputId="role" :options="Rhroles" optionLabel="name" :placeholder="user.role" checkmark :highlightOnSelect="false" class="custominput w-full md:w-56" appendTo="body"></Select>
             <label for="role" class="customlabel">Role</label>
           </FloatLabel>
         </div>
@@ -196,25 +223,29 @@
     </Dialog>
 
     <Dialog v-model:visible="showDialogCreate" header="Créer l'utilisateur" :style="{ width: '40%', backgroundColor: '#52422d', color: '#F7F6FB', borderColor:'#52422d' }" :position="position" :modal="true" :closable="false">
-      <div class="relative column wrap align-content-end mt-8" :style="{height:'26.5rem'}">
-        <div class="w-10/12">
-          <FloatLabel variant="on" class="mb-6">
+      <div class="relative column wrap align-content-end mt-8" :style="{height:'21.5rem'}">
+        <div class="w-10/12 ">
+          <FloatLabel variant="on" class="mb-4">
             <InputText class="custominput w-full" id="firstName" required v-model="firstName"/>
             <label for="firstName" class="customlabel">Prénom</label>
           </FloatLabel>
-          <FloatLabel variant="on" class="mb-6">
+          <FloatLabel variant="on" class="mb-4">
             <InputText class="custominput w-full" id="lastName" required v-model="lastName"/>
             <label for="lastName" class="customlabel">Nom</label>
           </FloatLabel>
-          <FloatLabel variant="on" class="mb-6">
+          <FloatLabel variant="on" class="mb-4">
             <InputText class="custominput w-full" id="mail" required v-model="mail"/>
             <label for="mail" class="customlabel">Adresse mail</label>
           </FloatLabel>
-          <FloatLabel variant="on" class="mb-6">
-              <Select v-model="userrole" inputId="roleCreate" :options="roles" optionLabel="name" placeholder="Selectionner un role" checkmark :highlightOnSelect="false" class="custominput w-full md:w-56" appendTo="body"></Select>
+          <FloatLabel variant="on" class="mb-4" v-if="actualUser.role === 'administrateur'">
+              <Select v-model="userrole" inputId="roleCreate" :options="Adminroles" optionLabel="name" placeholder="Selectionner un role" checkmark :highlightOnSelect="false" class="custominput w-full md:w-56" appendTo="body"></Select>
               <label for="roleCreate" class="customlabel">Role</label>
           </FloatLabel>
-          <FloatLabel variant="on" class="mb-6">
+          <FloatLabel class="mb-4" v-else>
+            <Select v-model="userrole" inputId="role" :options="Rhroles" optionLabel="name" placeholder="Selectionner un role" checkmark :highlightOnSelect="false" class="custominput w-full md:w-56" appendTo="body"></Select>
+            <label for="role" class="customlabel">Role</label>
+          </FloatLabel>
+          <FloatLabel variant="on" class="mb-4">
             <Password inputClass="custominput w-full" style="width:100%;" required v-model="password" id="password" promptLabel="Choisir un mot de passe" weakLabel="Faible" mediumLabel="Moyen" strongLabel="Fort" toggleMask />
             <label for="password" class="customlabel">Mot de passe</label>
           </FloatLabel>
@@ -230,12 +261,10 @@
 <style>
   .customlabel{
     color: white !important;
-    z-index: 10 !important;
   }
   .custominput {
     background-color: #826b48 !important;
     border:none !important;
-    margin-bottom: 1em;
     color:white !important;
   }
   .p-placeholder,.p-select-label {

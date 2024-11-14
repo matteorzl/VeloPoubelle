@@ -71,7 +71,7 @@ router.get('/app', authenticationToken, async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      'SELECT nom, prenom, role FROM Utilisateur WHERE id_utilisateur = ?', 
+      'SELECT nom, prenom, role, id_utilisateur FROM Utilisateur WHERE id_utilisateur = ?', 
       [req.user.userId] // Fetch only the necessary fields
     );
     connection.release();
@@ -184,6 +184,49 @@ router.delete('/user/:id', async (req, res) => {
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+router.put('/user/password/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { ancien_mot_de_passe, nouveau_mot_de_passe } = req.body;
+
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT mot_de_passe FROM Utilisateur WHERE id_utilisateur = ?',
+      [userId]
+    );
+
+    if (rows.length === 0) {
+      connection.release();
+      return res.status(404).json({ error: 'Utilisateur non trouvé' });
+    }
+
+    const user = rows[0];
+    const passwordMatch = await bcrypt.compare(ancien_mot_de_passe, user.mot_de_passe);
+
+    if (!passwordMatch) {
+      connection.release();
+      return res.status(403).json({ error: 'L\'ancien mot de passe est incorrect' });
+    }
+
+    const hashedNewPassword = await bcrypt.hash(nouveau_mot_de_passe, 10);
+
+    const [result] = await connection.execute(
+      'UPDATE Utilisateur SET mot_de_passe = ? WHERE id_utilisateur = ?',
+      [hashedNewPassword, userId]
+    );
+    connection.release();
+
+    if (result.affectedRows === 0) {
+      return res.status(500).json({ error: 'Erreur lors de la mise à jour du mot de passe' });
+    }
+
+    res.status(200).json({ message: 'Mot de passe modifié avec succès' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Erreur interne du serveur' });
   }
 });
 

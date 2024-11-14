@@ -19,5 +19,6 @@ declare module 'vue' {
     Select: typeof import('primevue/select')['default']
     Sidebar: typeof import('./src/components/sidebar/Sidebar.vue')['default']
     Test: typeof import('./src/components/sidebar/test.vue')['default']
+    Toast: typeof import('primevue/toast')['default']
   }
 }
