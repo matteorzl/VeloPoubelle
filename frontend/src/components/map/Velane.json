@@ -2,12 +2,12 @@
     "center": { "lat": 48.8495, "lng": 2.3531 },
     "zoom": 12,
     "stations": [
-      { "name": "Gare du Nord", "lat": 48.8801, "lng": 2.3550 },
-      { "name": "Châtelet-Les Halles", "lat": 48.8600, "lng": 2.3469 },
+      { "name": "Gare du Nord", "lat": 48.8800, "lng": 2.3556 },
+      { "name": "Châtelet-Les Halles", "lat": 48.8600, "lng": 2.3483 },
       { "name": "Saint-Michel-Notre-Dame", "lat": 48.8531, "lng": 2.3470 },
       { "name": "Luxembourg", "lat": 48.8462, "lng": 2.3378 },
       { "name": "Port-Royal", "lat": 48.8425, "lng": 2.3341 },
-      { "name": "Denfert-Rochereau", "lat": 48.8330, "lng": 2.3222 },
+      { "name": "Denfert-Rochereau", "lat": 48.8437, "lng": 2.3252 },
       { "name": "Cité universitaire", "lat": 48.8259, "lng": 2.3353 }
     ]
   }

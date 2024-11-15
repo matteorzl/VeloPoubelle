@@ -3,7 +3,7 @@
     "zoom": 11,
     "stations": [
       { "name": "Saint-Denis-Université", "lat": 48.9170, "lng": 2.3585 },
-      { "name": "Basilique de Saint-Denis", "lat": 48.9353, "lng": 2.3571 },
+      { "name": "Basilique de Saint-Denis", "lat": 48.9364, "lng": 2.3570 },
       { "name": "Saint-Denis-Porte de Paris", "lat": 48.9372, "lng": 2.3604 },
       { "name": "Carrefour Pleyel", "lat": 48.9095, "lng": 2.3215 },
       { "name": "Mairie de Saint-Ouen", "lat": 48.8998, "lng": 2.3326 },
@@ -20,7 +20,7 @@
       { "name": "Varenne", "lat": 48.8544, "lng": 2.3190 },
       { "name": "Saint-François-Xavier", "lat": 48.8500, "lng": 2.3199 },
       { "name": "Duroc", "lat": 48.8431, "lng": 2.3212 },
-      { "name": "Montparnasse-Bienvenüe", "lat": 48.8420, "lng": 2.3208 },
+      { "name": "Montparnasse-Bienvenüe", "lat": 48.8438, "lng": 2.3211 },
       { "name": "Gaîté", "lat": 48.8433, "lng": 2.3254 },
       { "name": "Pernety", "lat": 48.8417, "lng": 2.3285 },
       { "name": "Plaisance", "lat": 48.8412, "lng": 2.3334 },

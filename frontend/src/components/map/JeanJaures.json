@@ -14,13 +14,13 @@
       { "name": "Ségur", "lat": 48.8449, "lng": 2.3141 },
       { "name": "Duroc", "lat": 48.8431, "lng": 2.3212 },
       { "name": "Vaneau", "lat": 48.8444, "lng": 2.3237 },
-      { "name": "Sèvres-Babylone", "lat": 48.8511, "lng": 2.3224 },
+      { "name": "Sèvres-Babylone", "lat": 48.8540, "lng": 2.3201 },
       { "name": "Mabillon", "lat": 48.8534, "lng": 2.3350 },
       { "name": "Odéon", "lat": 48.8535, "lng": 2.3385 },
       { "name": "Cluny-La Sorbonne", "lat": 48.8484, "lng": 2.3449 },
       { "name": "Maubert-Mutualité", "lat": 48.8481, "lng": 2.3530 },
       { "name": "Cardinal Lemoine", "lat": 48.8470, "lng": 2.3587 },
-      { "name": "Jussieu", "lat": 48.8445, "lng": 2.3594 },
+      { "name": "Jussieu", "lat": 48.8444, "lng": 2.3576 },
       { "name": "Gare d'Austerlitz", "lat": 48.8410, "lng": 2.3670 }
     ]
   }

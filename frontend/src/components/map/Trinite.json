@@ -3,7 +3,7 @@
     "zoom": 14,
     "stations": [
       { "name": "Saint-Lazare", "lat": 48.8738, "lng": 2.3250 },
-      { "name": "Gare du Nord", "lat": 48.8801, "lng": 2.3550 }
+      { "name": "Gare du Nord", "lat": 48.8800, "lng": 2.3556 }
     ]
   }
   
