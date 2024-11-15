@@ -39,7 +39,11 @@ const props = defineProps({
 
 const logout = () => {
   localStorage.removeItem('token')
-  window.location.reload()
+  message.value = "Déconnexion..."
+  showSuccess(message)
+  setTimeout(() => {
+    window.location.reload()
+  }, 1500);
 }
 
 // Injecter isNavVisible depuis Application.vue

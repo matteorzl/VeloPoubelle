@@ -5,6 +5,12 @@
   import Dialog from 'primevue/dialog';
   import Button from 'primevue/button';
   import FloatLabel from 'primevue/floatlabel';
+  import { useToast } from "primevue/usetoast";
+  import DataTable from 'primevue/datatable';
+  import Column from 'primevue/column';
+import { color } from 'chart.js/helpers';
+
+  const toast = useToast();
 
   const users = ref([]);
   const actualUser = ref(undefined)
@@ -14,6 +20,7 @@
   const mail = ref('');
   const password = ref('');
   const userrole = ref(undefined);
+  const message = ref(null);
 
   const deleteUserId = ref(null);
   const modifyUserId = ref(null);
@@ -48,7 +55,8 @@
       actualUser.value = resp.data.message
     }
     catch(error) {
-      console.error('Error fetching user data:', error)
+      message.value = error.response.data.error
+      showWarn(message)
     }
   }else{
     router.push("/login")
@@ -62,7 +70,8 @@
         })
     }
     catch(error) {
-      console.error('Error fetching users data:', error);
+      message.value = error.response.data.error
+      showWarn(message)
     };
   }
 
@@ -96,8 +105,10 @@
    try {
     const response = await axios.delete(`/api/user/${deleteUserId.value}`);
     if (response.status === 200) {
-    users.value = users.value.filter(user => user.id_utilisateur !== deleteUserId.value);
-    showDialogDelete.value = false;
+      users.value = users.value.filter(user => user.id_utilisateur !== deleteUserId.value);
+      showDialogDelete.value = false;
+      message.value = response.data.message
+      showSuccess(message)
     }
    } catch (err) {
     error.value = err.response?.data?.error || 'Erreur lors de la suppression';
@@ -118,6 +129,8 @@
         if (response.status === 200) {
             getUsers()
             showDialogModify.value = false;
+            message.value = response.data.message
+            showSuccess(message)
         }
       } catch (err) {
         setTimeout(() => {
@@ -139,10 +152,19 @@
     if (response.status === 201) {
       getUsers()
       showDialogCreate.value = false;
+      message.value = response.data.message
+      showSuccess(message)
     }
   } catch (err) {
     error.value = err.response?.data?.error || 'Erreur lors de la création du compte';
   }
+  };
+
+  const showWarn = (message) => {
+    toast.add({ severity: 'error', summary: "Message d'erreur", detail: message, life: 3000 });
+  };
+  const showSuccess = (message) => {
+    toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
   };
 
   onMounted(() => {
@@ -151,34 +173,30 @@
 });
 </script>
 <template>
-  <div class="container">
-    <div class="row">
-      <div class="col-md-8 col-md-offset-2">
-        <div class="panel panel-default">
-          <div class="panel-body">
-            <table class="table">
-                <thead>
-                  <tr>
-                    <th>Prénom</th>
-                    <th>Nom</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Modifier</th>
-                    <th>Supprimer</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr v-for="(userlist, index) in users" :key="index">
-                    <td>{{userlist.prenom}}</td>
-                    <td>{{userlist.nom}}</td>
-                    <td>{{userlist.email}}</td>
-                    <td>{{userlist.role}}</td>
-                    <td><Button label="Modifier" severity="warn" @click="modifyUser(userlist.id_utilisateur ,'top')" class="btn btn-outline-warning"/></td>
-                    <td><Button label="Supprimer" severity="danger" @click="confirmDelete(userlist.id_utilisateur ,'top')" /></td>
-                  </tr>
-                </tbody>
-            </table>
-            <Button label="+ Ajouter un utilisateur" severity="success" @click="addUser()" />
+  <div class="container d-flex flex-column justify-content-top w-100">
+    <div class="d-grid d-md-flex justify-content-md-end">
+            <Button label="+ Ajouter un utilisateur" severity="success" @click="addUser()" class="m-2" />
+            </div>
+    <div class="d-flex">
+      <div class="col-md-8 col-md-offset-2 w-100">
+        <div class="panel panel-default w-100">
+          <div class="panel-body w-100">
+            <DataTable :value="users" scrollable scrollHeight="100%" tableStyle="min-width: 50rem"  class="custom-datatable">
+              <Column field="prenom" header="Prenom"></Column>
+              <Column field="nom" header="Nom"></Column>
+              <Column field="email" header="Email"></Column>
+              <Column field="role" header="Role"></Column>
+              <Column style="width: 10%; min-width: 8rem">
+                <template #body="slotProps">
+                  <Button label="Modifier" severity="warn" @click="modifyUser(slotProps.data.id_utilisateur ,'top')" class="btn btn-outline-warning"/>
+                </template>
+              </Column>
+              <Column style="width: 10%; min-width: 8rem">
+                <template #body="slotProps">
+                  <Button label="Supprimer" severity="danger" @click="confirmDelete(slotProps.data.id_utilisateur ,'top')" />
+                </template>
+              </Column>
+            </DataTable>
           </div>
         </div>
       </div>
@@ -269,5 +287,13 @@
   }
   .p-placeholder,.p-select-label {
     color:white !important;
+  }
+  .custom-datatable .p-datatable-thead th {
+    background-color: #826b48; /* Couleur de l'en-tête */
+    color: #e4dfd0;
+  }
+
+  .custom-datatable .p-datatable-tbody tr {
+    background-color: #e4dfd0;    /* Couleur des lignes */
   }
 </style>

@@ -80,7 +80,6 @@ router.get('/app', authenticationToken, async (req, res) => {
 
     res.status(200).json({ message: user }); // Send the user data with a 200 status
   } catch (error) {
-    console.error(error);
     res.status(500).json({ error: 'Internal server error' }); 
   }
 });
@@ -157,7 +156,7 @@ router.put('/user/:id', async (req, res) => {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    res.status(200).json({ message: 'User updated successfully' });
+    res.status(200).json({ message: 'Utilisateur mis à jour avec succès' });
   } catch (error) {
     console.log(error);
     res.status(500).json({   
@@ -177,10 +176,10 @@ router.delete('/user/:id', async (req, res) => {
     connection.release();
 
     if (result.affectedRows === 0) {
-      return res.status(404).json({ error: 'User not found' });
+      return res.status(404).json({ error: 'Utilisateur introuvable' });
     }
 
-    res.status(200).json({ message: 'User deleted successfully' });
+    res.status(200).json({ message: 'Utilisateur supprimé avec succès' });
   } catch (error) {
     console.log(error);
     res.status(500).json({ error: 'Internal Server Error' });

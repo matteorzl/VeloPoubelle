@@ -41,7 +41,7 @@ onBeforeMount(() => {
 
 <template>
   <div v-if="isLoading">
-    <ProgressSpinner style="width: 100px; height: 100px;top:50%;left:47%;margin-top: 20%;" strokeWidth="8" fill="transparent" animationDuration=".5s" aria-label="Custom ProgressSpinner"/>
+    <ProgressSpinner style="width: 100px; height: 100px;top:50%;left:47%;margin-top: 20%;" />
     <p style="text-align: center; font-size: large;">Chargement des données utilisateur...</p>
   </div>
   <div v-else>

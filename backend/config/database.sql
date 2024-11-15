@@ -11,7 +11,7 @@ CREATE TABLE Velo (
     id_velo INT PRIMARY KEY,
     autonomie INT,
     capacite INT,
-    etat ENUM('disponible', 'en_cours', 'maintenance')
+    etat ENUM('disponible', 'utilisé', 'en_maintenance')
 );
 
 CREATE TABLE Tournee (

@@ -96,7 +96,8 @@ export default {
     const initBikeMarker = () => {
       // Si un marqueur de vélo existe déjà, le retirer avant d'en ajouter un nouveau
       if (bikeMarker.value) {
-        map.value.removeLayer(bikeMarker.value);
+        console.log(map.value)
+        map.value.removeLayer(bikeMarker);
       }
 
       const bikeIcon = L.icon({
