@@ -3,15 +3,15 @@
     "zoom": 13,
     "stations": [
       { "name": "Châtelet", "lat": 48.8584, "lng": 2.3470 },
-      { "name": "Hôtel de Ville", "lat": 48.8566, "lng": 2.3522 },
+      { "name": "Hôtel de Ville", "lat": 48.8574, "lng": 2.3513 },
       { "name": "Rambuteau", "lat": 48.8606, "lng": 2.3569 },
       { "name": "Arts et Métiers", "lat": 48.8663, "lng": 2.3562 },
       { "name": "République", "lat": 48.8697, "lng": 2.3700 },
       { "name": "Goncourt", "lat": 48.8702, "lng": 2.3766 },
-      { "name": "Belleville", "lat": 48.8760, "lng": 2.3809 },
+      { "name": "Belleville", "lat": 48.8673, "lng": 2.3773 },
       { "name": "Pyrénées", "lat": 48.8781, "lng": 2.3904 },
       { "name": "Jourdain", "lat": 48.8797, "lng": 2.3984 },
-      { "name": "Place des Fêtes", "lat": 48.8866, "lng": 2.3998 },
+      { "name": "Place des Fêtes", "lat": 48.8765, "lng": 2.3986 },
       { "name": "Télégraphe", "lat": 48.8883, "lng": 2.4081 },
       { "name": "Porte des Lilas", "lat": 48.8899, "lng": 2.4133 },
       { "name": "Mairie des Lilas", "lat": 48.8886, "lng": 2.4201 }

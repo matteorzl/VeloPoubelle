@@ -10,8 +10,8 @@
       { "name": "Porte de Pantin", "lat": 48.8920, "lng": 2.3898 },
       { "name": "Ourcq", "lat": 48.8891, "lng": 2.3821 },
       { "name": "Laumière", "lat": 48.8844, "lng": 2.3759 },
-      { "name": "Jaurès", "lat": 48.8823, "lng": 2.3727 },
-      { "name": "Stalingrad", "lat": 48.8792, "lng": 2.3679 },
+      { "name": "Jaurès", "lat": 48.8836, "lng": 2.3752 },
+      { "name": "Stalingrad", "lat": 48.8832, "lng": 2.3650 },
       { "name": "Gare du Nord", "lat": 48.8800, "lng": 2.3556 },
       { "name": "Gare de l'Est", "lat": 48.8762, "lng": 2.3575 },
       { "name": "Jacques Bonsergent", "lat": 48.8711, "lng": 2.3597 },
@@ -21,10 +21,10 @@
       { "name": "Bréguet-Sabin", "lat": 48.8619, "lng": 2.3752 },
       { "name": "Bastille", "lat": 48.8532, "lng": 2.3693 },
       { "name": "Quai de la Rapée", "lat": 48.8456, "lng": 2.3702 },
-      { "name": "Gare d'Austerlitz", "lat": 48.8422, "lng": 2.3708 },
+      { "name": "Gare d'Austerlitz", "lat": 48.8410, "lng": 2.3670 },
       { "name": "Saint-Marcel", "lat": 48.8413, "lng": 2.3659 },
       { "name": "Campo-Formio", "lat": 48.8390, "lng": 2.3582 },
-      { "name": "Place d'Italie", "lat": 48.8328, "lng": 2.3512 }
+      { "name": "Porte d'Italie", "lat": 48.8324, "lng": 2.3507 }
     ]
   }
   

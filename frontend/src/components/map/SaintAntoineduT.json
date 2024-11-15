@@ -6,7 +6,7 @@
       { "name": "Simplon", "lat": 48.8887, "lng": 2.3430 },
       { "name": "Marcadet-Poissonniers", "lat": 48.8857, "lng": 2.3425 },
       { "name": "Château Rouge", "lat": 48.8842, "lng": 2.3427 },
-      { "name": "Barbès-Rochechouart", "lat": 48.8834, "lng": 2.3439 },
+      { "name": "Barbès-Rochechouart", "lat": 48.8848, "lng": 2.3481 },
       { "name": "Gare du Nord", "lat": 48.8807, "lng": 2.3550 },
       { "name": "Gare de l'Est", "lat": 48.8765, "lng": 2.3599 },
       { "name": "Château d'Eau", "lat": 48.8739, "lng": 2.3585 },
@@ -14,9 +14,9 @@
       { "name": "Réaumur-Sébastopol", "lat": 48.8659, "lng": 2.3520 },
       { "name": "Étienne Marcel", "lat": 48.8626, "lng": 2.3519 },
       { "name": "Les Halles", "lat": 48.8600, "lng": 2.3469 },
-      { "name": "Châtelet", "lat": 48.8582, "lng": 2.3470 },
+      { "name": "Châtelet", "lat": 48.8584, "lng": 2.3470 },
       { "name": "Cité", "lat": 48.8554, "lng": 2.3505 },
-      { "name": "Saint-Michel-Notre-Dame", "lat": 48.8529, "lng": 2.3447 },
+      { "name": "Saint-Michel-Notre-Dame", "lat": 48.8531, "lng": 2.3470 },
       { "name": "Odéon", "lat": 48.8512, "lng": 2.3378 },
       { "name": "Saint-Germain-des-Prés", "lat": 48.8550, "lng": 2.3335 },
       { "name": "Saint-Sulpice", "lat": 48.8533, "lng": 2.3335 },
@@ -27,7 +27,7 @@
       { "name": "Denfert-Rochereau", "lat": 48.8437, "lng": 2.3252 },
       { "name": "Mouton-Duvernet", "lat": 48.8359, "lng": 2.3240 },
       { "name": "Alésia", "lat": 48.8320, "lng": 2.3265 },
-      { "name": "Porte d'Orléans", "lat": 48.8192, "lng": 2.3297 }
+      { "name": "Porte d'Orléans", "lat": 48.8259, "lng": 2.3207 }
     ]
   }
   

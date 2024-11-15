@@ -1,13 +1,6 @@
 <template>
   <div style="width: 100%; float: right;">
     <div style="margin: 5%">
-      <Select 
-        v-model="selectedRoute" 
-        :options="routeOptions" 
-        optionLabel="name" 
-        placeholder="Select Route"
-        class="md:w-80 custominput" 
-        @change="onRouteChange" />
     </div>
     <div id="map" class="map-container"></div>
   </div>
@@ -21,7 +14,6 @@ export default {
   name: 'MetroMap',
   setup() {
     const map = ref(null);
-    const selectedRoute = ref(null);
     const routeOptions = ref([
       { name: 'Alsace-Lorraine', file: 'AlsaceLorraine.json' },
       { name: 'Arts', file: 'Arts.json' },
@@ -48,26 +40,25 @@ export default {
       { name: 'Trinite', file: 'Trinite.json' },
       { name: 'Velane', file: 'Velane.json' },
     ]);
-    const metroStations = ref([]);
-    const bikeMarker = ref(null); // Marqueur de vélo
-    const centerCoords = ref([48.8695, 2.4031]); // Coordonnées par défaut
-    const zoomCoords = ref(14); // Zoom par défaut
 
-    // Charger un itinéraire depuis un fichier JSON
+    // Charger toutes les routes et les afficher
     const loadRoute = async (file) => {
       try {
         const response = await fetch(`/src/components/map/${file}`);
         const data = await response.json();
 
-        if (data.center) {
-          centerCoords.value = [data.center.lat, data.center.lng];
-          zoomCoords.value = data.zoom;
-          map.value.setView(centerCoords.value, zoomCoords.value);
-        }
+        if (data.stations && data.stations.length > 0) {
+          const coords = data.stations.map(station => [station.lat, station.lng]);
 
-        metroStations.value = data.stations;
-        updateMap();
-        animateBikeAlongRoute();
+          // Ajouter les markers pour les stations
+          data.stations.forEach(station => {
+            L.marker([station.lat, station.lng]).addTo(map.value)
+              .bindPopup(`<b>${station.name}</b>`);
+          });
+
+          // Ajouter la polyline pour l'itinéraire
+          L.polyline(coords, { color: 'blue' }).addTo(map.value);
+        }
       } catch (error) {
         console.error('Erreur lors du chargement de l\'itinéraire:', error);
       }
@@ -159,21 +150,28 @@ export default {
 
     // Initialiser la carte
     onMounted(() => {
-      map.value = L.map('map').setView(centerCoords.value, zoomCoords.value);
+      // Créer la carte et définir un zoom de départ (par exemple 13)
+      map.value = L.map('map').setView([48.8695, 2.4031], 13);
+
+      // Ajouter le fond de carte (tuiles OpenStreetMap)
       L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 18,
         attribution: 'Map data &copy; <a href="https://openstreetmap.org">OpenStreetMap</a> contributors'
       }).addTo(map.value);
+
+      // Charger toutes les routes et les afficher
+      routeOptions.value.forEach(route => {
+        loadRoute(route.file);
+      });
     });
 
     return {
-      selectedRoute,
-      routeOptions,
-      onRouteChange
+      routeOptions
     };
   }
 };
 </script>
+
 
 <style scoped>
 .map-container {
@@ -181,10 +179,31 @@ export default {
   height: 500px;
 }
 
+.route-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.route-list li {
+  padding: 10px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.route-list li.selected {
+  background-color: #007bff;
+  color: white;
+}
+
+.route-list li:hover {
+  background-color: #f0f0f0;
+}
+
 .custominput {
-    background-color: #826b48 !important;
-    border: none !important;
-    margin-bottom: 1em;
-    color: white !important;
+  background-color: #826b48 !important;
+  border: none !important;
+  margin-bottom: 1em;
+  color: white !important;
 }
 </style>
+

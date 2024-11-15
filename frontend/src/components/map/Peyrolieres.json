@@ -7,7 +7,7 @@
       { "name": "Boissière", "lat": 48.8666, "lng": 2.2892 },
       { "name": "Trocadéro", "lat": 48.8607, "lng": 2.2916 },
       { "name": "Passy", "lat": 48.8607, "lng": 2.2832 },
-      { "name": "Champ de Mars-Tour Eiffel", "lat": 48.8560, "lng": 2.2991 },
+      { "name": "Champ de Mars-Tour Eiffel", "lat": 48.8553, "lng": 2.2981 },
       { "name": "Dupleix", "lat": 48.8529, "lng": 2.2877 },
       { "name": "La Motte-Picquet-Grenelle", "lat": 48.8505, "lng": 2.2961 },
       { "name": "Cambronne", "lat": 48.8473, "lng": 2.2962 },
@@ -29,7 +29,7 @@
       { "name": "Daumesnil", "lat": 48.8321, "lng": 2.3955 },
       { "name": "Bel-Air", "lat": 48.8320, "lng": 2.4046 },
       { "name": "Picpus", "lat": 48.8327, "lng": 2.4173 },
-      { "name": "Nation", "lat": 48.8525, "lng": 2.3966 }
+      { "name": "Nation", "lat": 48.8483, "lng": 2.3952 }
     ]
   }
   

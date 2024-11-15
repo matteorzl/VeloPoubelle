@@ -4,7 +4,7 @@
     "stations": [
       { "name": "Gare du Nord", "lat": 48.8801, "lng": 2.3550 },
       { "name": "Châtelet-Les Halles", "lat": 48.8600, "lng": 2.3499 },
-      { "name": "Gare de Lyon", "lat": 48.8448, "lng": 2.3747 }
+      { "name": "Gare de Lyon", "lat": 48.8443, "lng": 2.3748 }
     ]
   }
   

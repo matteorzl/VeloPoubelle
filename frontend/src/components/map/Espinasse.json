@@ -1,22 +1,14 @@
 {
-    "center": { "lat": 48.8592, "lng": 2.2448 },
-    "zoom": 14,
-    "stations": [
-      { "name": "La Défense", "lat": 48.8925, "lng": 2.2381 },
-      { "name": "Puteaux", "lat": 48.8807, "lng": 2.2446 },
-      { "name": "Belvédère", "lat": 48.8801, "lng": 2.2442 },
-      { "name": "Suresnes-Longchamp", "lat": 48.8766, "lng": 2.2261 },
-      { "name": "Les Coteaux", "lat": 48.8773, "lng": 2.2151 },
-      { "name": "Les Milons", "lat": 48.8761, "lng": 2.2085 },
-      { "name": "Parc de Saint-Cloud", "lat": 48.8485, "lng": 2.2119 },
-      { "name": "Musée de Sèvres", "lat": 48.8041, "lng": 2.2046 },
-      { "name": "Brimborion", "lat": 48.7913, "lng": 2.2194 },
-      { "name": "Meudon-sur-Seine", "lat": 48.7843, "lng": 2.2263 },
-      { "name": "Les Moulineaux", "lat": 48.7882, "lng": 2.2523 },
-      { "name": "Jacques-Henri Lartigue", "lat": 48.7826, "lng": 2.2628 },
-      { "name": "Issy-Val de Seine", "lat": 48.8284, "lng": 2.2752 },
-      { "name": "Balard", "lat": 48.8292, "lng": 2.2758 },
-      { "name": "Porte de Versailles", "lat": 48.8320, "lng": 2.2890 }
-    ]
-  }
-  
+  "center": { "lat": 48.8566, "lng": 2.3522 },
+  "zoom": 14,
+  "stations": [
+    { "name": "Saint-Lazare", "lat": 48.8738, "lng": 2.3250 },
+    { "name": "Madeleine", "lat": 48.8691, "lng": 2.3218 },
+    { "name": "Pyramides", "lat": 48.8658, "lng": 2.3325 },
+    { "name": "Châtelet", "lat": 48.8584, "lng": 2.3470 },
+    { "name": "Gare de Lyon", "lat": 48.8443, "lng": 2.3748 },
+    { "name": "Bercy", "lat": 48.8345, "lng": 2.3780 },
+    { "name": "Cour Saint-Émilion", "lat": 48.8331, "lng": 2.3809 },
+    { "name": "Bibliothèque François Mitterrand", "lat": 48.8329, "lng": 2.3744 }
+  ]
+}
