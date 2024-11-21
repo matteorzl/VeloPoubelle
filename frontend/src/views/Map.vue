@@ -22,11 +22,14 @@ const map = ref<L.Map | null>(null);
 const allStations = ref<Station[]>([]);
 const intersections = ref<Intersection[]>([]);
 const isGeneratingRoutes = ref(false);
+const baseStation = { name: "Porte d'Ivry", lat: 48.8179, lng: 2.3703 };
 const ORS_API_KEY = '5b3ce3597851110001cf624899c5ec69e54e4fd98fcf69fe706c134d';
 const ORS_BASE_URL = 'https://api.openrouteservice.org/v2/directions/foot-walking';
 
 const routeOptions = ref([
   { name: 'Alsace-Lorraine', file: 'AlsaceLorraine.json' },
+  // { name: 'GentyMagre', file: 'GentyMagre.json' },
+  // { name: 'Bedelières', file: 'Bedelieres.json' },
   /**{ name: 'Arts', file: 'Arts.json' },
   { name: 'Bedelières', file: 'Bedelieres.json' },
   { name: 'Croix-Baragnon', file: 'CroixBaragnon.json' },
@@ -100,7 +103,7 @@ const fetchRouteFromORS = async (coordinates: [number, number][]) => {
 // Ajout de la gestion de l’autonomie et du retour à la base
 const checkBikeStatus = (distanceTravelled: number, stopsMade: number, isWinter: boolean = false) => {
   const maxDistance = isWinter ? 45 : 50; // Autonomie réduite en hiver
-  const maxStops = 4; // 200kg max, 50kg par arrêt
+  const maxStops = 3; // 200kg max, 50kg par arrêt
 
   if (distanceTravelled >= maxDistance || stopsMade >= maxStops) {
     console.log("Retour à la base nécessaire.");
@@ -127,12 +130,14 @@ const generateRoutes = async () => {
   if (isGeneratingRoutes.value) return;
   isGeneratingRoutes.value = true;
 
-  const bikeStatus = { distance: 0, stops: 0 };  // Suivi de la distance et du nombre d'arrêts
+  const bikeStatus = { distance: 0, stops: 0 }; // Suivi de la distance et des arrêts
 
   try {
-    // Mapper les coordonnées des stations
-    const coordinates = allStations.value.map(station => [station.lng, station.lat] as [number, number]);
-    
+    // Préparer les coordonnées avec la base comme point de départ
+    const baseCoords = [baseStation.lng, baseStation.lat];
+    const stationCoords = allStations.value.map(station => [station.lng, station.lat] as [number, number]);
+    const coordinates = [baseCoords, ...stationCoords]; // Insérer la base au début
+
     // Diviser les coordonnées en paires (chunks de 2)
     const chunks = splitIntoChunks(coordinates, 2);
 
@@ -140,27 +145,41 @@ const generateRoutes = async () => {
       try {
         // Appel à l'API avec un chunk de 2 stations
         const routeData = await fetchRouteFromORS(chunk);
-        
+
         if (routeData) {
           displayRouteOnMap(routeData);
-          console.log(`Nombre de stations : ${allStations.value.length}`);
-          console.log(`Nombre d'itinéraires : ${allStations.value.length - 1}`);
-          
-          // Logique de mise à jour du statut du vélo (distance parcourue et arrêts)
-          bikeStatus.distance += 0.5;  // Supposons qu'entre chaque station il y a 500m
-          bikeStatus.stops++;  // Un arrêt par station visitée
 
-          // Vérifier si le vélo a besoin de revenir à la base
+          // Mise à jour de l'état du vélo
+          bikeStatus.distance += 0.5; // Supposons 0,5 km entre deux stations
+          bikeStatus.stops++; // Un arrêt par station visitée
+
+          // Vérifier si le vélo doit retourner à la base
           if (checkBikeStatus(bikeStatus.distance, bikeStatus.stops)) {
-            console.log("Retour à la base pour recharge/vidage.");
+            console.log("Retour à la base nécessaire.");
+
+            // Générer un itinéraire vers la station de base
+            const returnRoute = await fetchRouteFromORS([
+              chunk[chunk.length - 1], // Dernière station visitée
+              [baseStation.lng, baseStation.lat], // Coordonnées de la base
+            ]);
+
+            if (returnRoute) {
+              displayRouteOnMap(returnRoute, true); // Afficher en vert pour indiquer le retour
+              console.log(`Retour à la base effectué (${baseStation.name}).`);
+            }
+
+            // Réinitialiser le statut du vélo après retour
             bikeStatus.distance = 0;
             bikeStatus.stops = 0;
+
+            // Reprendre depuis la base
+            const nextStart = [baseStation.lng, baseStation.lat];
+            coordinates.unshift(nextStart); // Recommencer à partir de la base
           }
         }
 
         // Délai entre les requêtes pour respecter les limites de l'API
         await new Promise(resolve => setTimeout(resolve, 1500));
-
       } catch (error) {
         console.warn('Erreur lors de la génération d\'un segment:', error);
         continue; // Continuer avec le prochain segment en cas d'erreur
@@ -177,8 +196,6 @@ const displayRouteOnMap = (route, isCompleted = false) => {
   const decodedCoords = polyline.decode(route.routes[0].geometry);
   const leafletCoords = decodedCoords.map(([lat, lng]) => [lat, lng]);
 
-  console.log(decodedCoords, leafletCoords)
-
   L.polyline(leafletCoords, {
     color,
     weight: 3,
@@ -186,7 +203,6 @@ const displayRouteOnMap = (route, isCompleted = false) => {
   }).addTo(map.value);
 };
 
-// Load route and update station data with visited status
 const loadRoute = async (file: string, routeName: string) => {
   try {
     const response = await fetch(`/src/components/map/${file}`);
@@ -195,6 +211,7 @@ const loadRoute = async (file: string, routeName: string) => {
     if (data.stations?.length > 0) {
       const coords = data.stations.map((station: any) => [station.lat, station.lng]);
 
+      // Afficher les marqueurs pour les stations
       if (map.value) {
         data.stations.forEach((station: any) => {
           L.marker([station.lat, station.lng])
@@ -202,7 +219,10 @@ const loadRoute = async (file: string, routeName: string) => {
             .bindPopup(`<b>${station.name}</b>`);
         });
 
+        // Supprimer cette partie pour ne pas tracer de polyline entre les marqueurs
+        /*
         L.polyline(coords, { color: 'blue' }).addTo(map.value);
+        */
       }
 
       allStations.value.push(...data.stations.map((station: any) => ({
@@ -218,6 +238,7 @@ const loadRoute = async (file: string, routeName: string) => {
   }
 };
 
+
 // Fonction pour charger les stations depuis un fichier JSON
 const loadStationData = async (file: string) => {
   try {
@@ -225,7 +246,7 @@ const loadStationData = async (file: string) => {
     const data = await response.json();
 
     if (data.stations?.length > 0) {
-      // Ajouter les stations à la liste `allStations` avec le champ `visited`
+      // Ajouter les stations à la liste allStations avec le champ visited
       const stations = data.stations.map((station: any) => ({
         lat: station.lat,
         lng: station.lng,
