@@ -40,11 +40,12 @@ onBeforeMount(() => {
 </script>
 
 <template>
+  <!--
   <div v-if="isLoading">
     <ProgressSpinner style="width: 100px; height: 100px;top:50%;left:47%;margin-top: 20%;" />
     <p style="text-align: center; font-size: large;">Chargement des données utilisateur...</p>
   </div>
-  <div v-else>
+  <div v-else>-->
     <div :class="{ 'content-shifted': isNavVisible }">
       <!-- Sidebar -->
       <Sidebar :id="user?.id_utilisateur" :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
@@ -55,7 +56,7 @@ onBeforeMount(() => {
         <router-view />
       </div>
     </div>
-  </div>
+  <!--</div>-->
 </template>
 
 <style>

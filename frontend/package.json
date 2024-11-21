@@ -13,6 +13,7 @@
     "format": "prettier --write src/"
   },
   "dependencies": {
+    "@mapbox/polyline": "^1.2.1",
     "@primevue/themes": "4.0.0-rc.1",
     "@studiometa/vue-mapbox-gl": "^2.5.0",
     "apexcharts": "^4.0.0",
