@@ -448,6 +448,18 @@ onMounted(() => {
 
 </script>
 
+<template>
+  <div class="metro-map">
+    <button 
+      @click="generateRoutes" 
+      :disabled="isGeneratingRoutes"
+      class="generate-routes-btn"
+    >
+      {{ isGeneratingRoutes ? 'Génération en cours...' : 'Générer Itinéraires' }}
+    </button>
+    <div id="map" class="map-container"></div>
+  </div>
+</template>
 
 <style scoped>
 
