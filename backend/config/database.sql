@@ -35,11 +35,10 @@ CREATE TABLE Arret (
 CREATE TABLE Trajet (
     id_trajet INT PRIMARY KEY,
     tournee_id INT,
-    velo_id INT,
-    cycliste_id INT,
+    lat FLOAT,
+    lng FLOAT,
+    ordre_passage INT,
     FOREIGN KEY (tournee_id) REFERENCES Tournee(id_tournee),
-    FOREIGN KEY (velo_id) REFERENCES Velo(id_velo),
-    FOREIGN KEY (cycliste_id) REFERENCES Utilisateur(id_utilisateur)
 );
 
 CREATE TABLE Etape (

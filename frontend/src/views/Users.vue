@@ -154,6 +154,11 @@ import { color } from 'chart.js/helpers';
       showDialogCreate.value = false;
       message.value = response.data.message
       showSuccess(message)
+      lastName.value = ''
+      firstName.value = ''
+      mail.value = ''
+      password.value = ''
+      userrole.value.value = ''
     }
   } catch (err) {
     error.value = err.response?.data?.error || 'Erreur lors de la création du compte';

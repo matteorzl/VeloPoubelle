@@ -6,10 +6,10 @@ const mysql = require('mysql2/promise');
 const router = express.Router();
 
 const pool = mysql.createPool({
-    host: 'agweco.fr',
-    user: 'pma-admin',  
-    database: 'veloPoubelle',
-    password: 'Agweco@SQL31',
+    host: 'localhost',
+    user: 'root',  
+    database: 'velopobelle',
+    password: '',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -72,13 +72,44 @@ router.get('/app', authenticationToken, async (req, res) => {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
       'SELECT nom, prenom, role, id_utilisateur FROM Utilisateur WHERE id_utilisateur = ?', 
-      [req.user.userId] // Fetch only the necessary fields
+      [req.user.userId]
     );
     connection.release();
 
     const user = rows[0];
 
-    res.status(200).json({ message: user }); // Send the user data with a 200 status
+    res.status(200).json({ message: user });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' }); 
+  }
+});
+
+router.get('/cycliste', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT nom, prenom, id_utilisateur FROM utilisateur WHERE role = ?',
+      ['cycliste']
+    );
+    connection.release();
+
+    res.status(200).json({ 
+      count: rows.length,
+      rows,   });
+  } catch (error) {
+    res.status(500).json({ error: 'Internal server error' }); 
+  }
+});
+
+router.get('/map/arret', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT id_arret, nom, lat, lng FROM arret', 
+    );
+    connection.release();
+
+    res.status(200).json({ rows });
   } catch (error) {
     res.status(500).json({ error: 'Internal server error' }); 
   }
@@ -159,7 +190,7 @@ router.put('/user/:id', async (req, res) => {
     res.status(200).json({ message: 'Utilisateur mis à jour avec succès' });
   } catch (error) {
     console.log(error);
-    res.status(500).json({   
+    res.status(500).json({   
  error: 'Internal Server Error'});
   }
 });
@@ -226,6 +257,75 @@ router.put('/user/password/:id', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Erreur interne du serveur' });
+  }
+});
+
+router.post('/tournee', async (req, res) => {
+  const { tournees } = req.body;
+  const connection = await pool.getConnection();
+
+  if (!Array.isArray(tournees) || tournees.length === 0) {
+    return res.status(400).json({ error: 'Aucune tournée fournie.' });
+  }
+
+  try {
+    // Supprimer les anciennes données
+    await connection.execute('DELETE FROM Tournee');
+
+    // Réinitialiser l'auto-incrément
+    await connection.execute('ALTER TABLE Tournee AUTO_INCREMENT = 1');
+
+    // Préparer les données pour l'insertion
+    const values = tournees.map(t => [t.date, t.velo_id, t.etat, t.nom]);
+    const placeholders = values.map(() => '(?, ?, ?, ?)').join(', ');
+
+    const query = `
+      INSERT INTO Tournee (date, velo_id, etat, nom)
+      VALUES ${placeholders}
+    `;
+
+    // Insérer les nouvelles données
+    await connection.execute(query, values.flat());
+
+    connection.release();
+    res.json({ message: 'Tournées enregistrées avec succès.' });
+  } catch (error) {
+    console.error('Erreur lors de l\'insertion des tournées:', error);
+    connection.release(); // Toujours relâcher la connexion
+    res.status(500).json({ error: 'Erreur serveur lors de l\'insertion des tournées.' });
+  }
+});
+
+router.post('/trajet', async (req, res) => {
+  const { trajets } = req.body;
+  const connection = await pool.getConnection();
+
+  if (!Array.isArray(trajets) || trajets.length === 0) {
+    return res.status(400).json({ error: 'Aucun trajet fourni.' });
+  }
+
+  try {
+    // Supprimer les anciennes données
+    await connection.execute('DELETE FROM Trajet');
+
+    // Réinitialiser l'auto-incrément
+    await connection.execute('ALTER TABLE Trajet AUTO_INCREMENT = 1');
+
+    const values = trajets.map(t => [t.tournee_id, t.lat, t.lng, t.ordre_passage]);
+    const placeholders = values.map(() => '(?, ?, ?, ?)').join(', ');
+
+    const query = `
+      INSERT INTO Trajet (tournee_id, lat, lng, ordre_passage)
+      VALUES ${placeholders}
+    `;
+
+    await connection.execute(query, values.flat());
+    connection.release();
+    res.json({ message: 'Trajets enregistrés avec succès.' });
+  } catch (error) {
+    console.error('Erreur lors de l\'insertion des trajets:', error);
+    connection.release();
+    res.status(500).json({ error: 'Erreur serveur lors de l\'insertion des trajets.' });
   }
 });
 
