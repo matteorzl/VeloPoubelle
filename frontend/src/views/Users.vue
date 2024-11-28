@@ -1,180 +1,184 @@
 <script setup>
-  import { ref, onMounted} from 'vue';
-  import axios from 'axios';
-  axios.defaults.baseURL = 'http://localhost:3000';
-  import Dialog from 'primevue/dialog';
-  import Button from 'primevue/button';
-  import FloatLabel from 'primevue/floatlabel';
-  import { useToast } from "primevue/usetoast";
-  import DataTable from 'primevue/datatable';
-  import Column from 'primevue/column';
+import { ref, onMounted} from 'vue';
+import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:3000';
+import Dialog from 'primevue/dialog';
+import Button from 'primevue/button';
+import FloatLabel from 'primevue/floatlabel';
+import { useToast } from "primevue/usetoast";
+import DataTable from 'primevue/datatable';
+import Column from 'primevue/column';
 import { color } from 'chart.js/helpers';
+import router from '../router/index'
 
-  const toast = useToast();
+const toast = useToast();
 
-  const users = ref([]);
-  const actualUser = ref(undefined)
-  const user = ref('');
-  const lastName = ref('');
-  const firstName = ref('')
-  const mail = ref('');
-  const password = ref('');
-  const userrole = ref(undefined);
-  const message = ref(null);
+const users = ref([]);
+const actualUser = ref(undefined)
+const user = ref('');
+const lastName = ref('');
+const firstName = ref('')
+const mail = ref('');
+const password = ref('');
+const userrole = ref(undefined);
+const message = ref(null);
 
-  const deleteUserId = ref(null);
-  const modifyUserId = ref(null);
+const deleteUserId = ref(null);
+const modifyUserId = ref(null);
 
-  const showDialogDelete = ref(false);
-  const showDialogModify = ref(false);
-  const showDialogCreate = ref(false);
+const showDialogDelete = ref(false);
+const showDialogModify = ref(false);
+const showDialogCreate = ref(false);
 
-  const error = ref(null);
-  const position = ref('center');
-  const visible = ref(false);
+const error = ref(null);
+const position = ref('center');
+const visible = ref(false);
 
-  const Adminroles = ref([
-    { name: 'Cycliste', value:'cycliste' },
-    { name: 'RH', value:'RH' },
-    { name: 'Admin', value:'administrateur' },
-    { name: 'Gestionnaire', value:'gestionnaire_reseau' }
-  ]);
+const Adminroles = ref([
+  { name: 'Cycliste', value:'cycliste' },
+  { name: 'RH', value:'RH' },
+  { name: 'Admin', value:'administrateur' },
+  { name: 'Gestionnaire', value:'gestionnaire_reseau' }
+]);
 
-  const Rhroles = ref([
-    { name: 'Cycliste', value:'cycliste' },
-    { name: 'RH', value:'RH' },
-    { name: 'Gestionnaire', value:'gestionnaire_reseau' }
-  ]);
+const Rhroles = ref([
+  { name: 'Cycliste', value:'cycliste' },
+  { name: 'RH', value:'RH' },
+  { name: 'Gestionnaire', value:'gestionnaire_reseau' }
+]);
 
-  async function getActualUser(){
-  if(localStorage.getItem("token")) {
-    try{
-      const resp = await axios.get('/api/app', {
-        headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+async function getActualUser(){
+if(localStorage.getItem("token")) {
+  try{
+    const resp = await axios.get('/api/app', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    actualUser.value = resp.data.message
+    if(actualUser.value.role !== 'administrateur' && actualUser.value.role !== 'rh') {
+      router.push("/app/map")
+    }
+  }
+  catch(error) {
+    message.value = error.response.data.error
+    showWarn(message)
+  }
+}else{
+  router.push("/login")
+  }
+}
+
+async function getUsers(){
+  try{
+    await axios.get(`api/users`).then(res=>{
+        users.value=res.data
       })
-      actualUser.value = resp.data.message
-    }
-    catch(error) {
-      message.value = error.response.data.error
-      showWarn(message)
-    }
-  }else{
-    router.push("/login")
-    }
   }
-
-  async function getUsers(){
-    try{
-      await axios.get(`api/users`).then(res=>{
-          users.value=res.data
-        })
-    }
-    catch(error) {
-      message.value = error.response.data.error
-      showWarn(message)
-    };
-  }
-
-  const modifyUser = async (id,pos) => {
-    try {
-        const res = await axios.get(`api/user/${id}`); 
-        user.value = res.data;
-        position.value = pos;
-        visible.value = true;
-        modifyUserId.value = id;
-        showDialogModify.value = true;
-    } catch (err) {
-        console.error('Error fetching user data:', err);
-    }
+  catch(error) {
+    message.value = error.response.data.error
+    showWarn(message)
   };
+}
 
-  const addUser = () => {
-    position.value = 'top';
-    visible.value = true;
-    showDialogCreate.value = true;
-  };
-
-  const confirmDelete = (id,pos) => {
-    position.value = pos;
-    visible.value = true;
-    deleteUserId.value = id;
-    showDialogDelete.value = true;
-  };
-
-  const onDelete = async () => {
-   try {
-    const response = await axios.delete(`/api/user/${deleteUserId.value}`);
-    if (response.status === 200) {
-      users.value = users.value.filter(user => user.id_utilisateur !== deleteUserId.value);
-      showDialogDelete.value = false;
-      message.value = response.data.message
-      showSuccess(message)
-    }
-   } catch (err) {
-    error.value = err.response?.data?.error || 'Erreur lors de la suppression';
-   }
-  };
-
-  const onModify = async () => {
-    const updatedUser = {
-      nom: user.value.nom,
-      prenom: user.value.prenom,
-      email: user.value.email,
-      role: user.value.role.value,
-    };
-
-    try {
-        const response = await axios.put(`/api/user/${modifyUserId.value}`,updatedUser) // Send entire object
-
-        if (response.status === 200) {
-            getUsers()
-            showDialogModify.value = false;
-            message.value = response.data.message
-            showSuccess(message)
-        }
-      } catch (err) {
-        setTimeout(() => {
-            error.value = err.response?.data?.error || 'Erreur lors de la connexion';
-        }, 2000);
-    }
-  };
-
-  const onCreate = async () => {
-    try {
-      const response = await axios.post('/api/register', {
-        nom: lastName.value,
-        prenom: firstName.value, 
-        email: mail.value,
-        mot_de_passe: password.value,
-        role: userrole.value.value
-      });
-
-    if (response.status === 201) {
-      getUsers()
-      showDialogCreate.value = false;
-      message.value = response.data.message
-      showSuccess(message)
-      lastName.value = ''
-      firstName.value = ''
-      mail.value = ''
-      password.value = ''
-      userrole.value.value = ''
-    }
+const modifyUser = async (id,pos) => {
+  try {
+      const res = await axios.get(`api/user/${id}`); 
+      user.value = res.data;
+      position.value = pos;
+      visible.value = true;
+      modifyUserId.value = id;
+      showDialogModify.value = true;
   } catch (err) {
-    error.value = err.response?.data?.error || 'Erreur lors de la création du compte';
+      console.error('Error fetching user data:', err);
   }
+};
+
+const addUser = () => {
+  position.value = 'top';
+  visible.value = true;
+  showDialogCreate.value = true;
+};
+
+const confirmDelete = (id,pos) => {
+  position.value = pos;
+  visible.value = true;
+  deleteUserId.value = id;
+  showDialogDelete.value = true;
+};
+
+const onDelete = async () => {
+  try {
+  const response = await axios.delete(`/api/user/${deleteUserId.value}`);
+  if (response.status === 200) {
+    users.value = users.value.filter(user => user.id_utilisateur !== deleteUserId.value);
+    showDialogDelete.value = false;
+    message.value = response.data.message
+    showSuccess(message)
+  }
+  } catch (err) {
+  error.value = err.response?.data?.error || 'Erreur lors de la suppression';
+  }
+};
+
+const onModify = async () => {
+  const updatedUser = {
+    nom: user.value.nom,
+    prenom: user.value.prenom,
+    email: user.value.email,
+    role: user.value.role.value,
   };
 
-  const showWarn = (message) => {
-    toast.add({ severity: 'error', summary: "Message d'erreur", detail: message, life: 3000 });
-  };
-  const showSuccess = (message) => {
-    toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
-  };
+  try {
+      const response = await axios.put(`/api/user/${modifyUserId.value}`,updatedUser) // Send entire object
 
-  onMounted(() => {
-    getActualUser();
-    getUsers();
+      if (response.status === 200) {
+          getUsers()
+          showDialogModify.value = false;
+          message.value = response.data.message
+          showSuccess(message)
+      }
+    } catch (err) {
+      setTimeout(() => {
+          error.value = err.response?.data?.error || 'Erreur lors de la connexion';
+      }, 2000);
+  }
+};
+
+const onCreate = async () => {
+  try {
+    const response = await axios.post('/api/register', {
+      nom: lastName.value,
+      prenom: firstName.value, 
+      email: mail.value,
+      mot_de_passe: password.value,
+      role: userrole.value.value
+    });
+
+  if (response.status === 201) {
+    getUsers()
+    showDialogCreate.value = false;
+    message.value = response.data.message
+    showSuccess(message)
+    lastName.value = ''
+    firstName.value = ''
+    mail.value = ''
+    password.value = ''
+    userrole.value.value = ''
+  }
+} catch (err) {
+  error.value = err.response?.data?.error || 'Erreur lors de la création du compte';
+}
+};
+
+const showWarn = (message) => {
+  toast.add({ severity: 'error', summary: "Message d'erreur", detail: message, life: 3000 });
+};
+const showSuccess = (message) => {
+  toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
+};
+
+onMounted(() => {
+  getActualUser();
+  getUsers();
 });
 </script>
 <template>

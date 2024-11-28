@@ -40,23 +40,18 @@ onBeforeMount(() => {
 </script>
 
 <template>
-  <!--
-  <div v-if="isLoading">
-    <ProgressSpinner style="width: 100px; height: 100px;top:50%;left:47%;margin-top: 20%;" />
-    <p style="text-align: center; font-size: large;">Chargement des données utilisateur...</p>
-  </div>
-  <div v-else>-->
+    <div v-if="isLoading">
+      <ProgressSpinner style="width: 100px; height: 100px;top:50%;left:47%;margin-top: 20%;" />
+      <p style="text-align: center; font-size: large;">Chargement des données utilisateur...</p>
+    </div>
+    <div v-else>
     <div :class="{ 'content-shifted': isNavVisible }">
-      <!-- Sidebar -->
       <Sidebar :id="user?.id_utilisateur" :nom="user?.nom" :prenom="user?.prenom" :role="user?.role" />
-      
-      <!-- Contenu principal où les sous-composants seront chargés -->
       <div class="flex items-center justify-center h-screen" style="background-color: #e4dfd0 !important;">
-        <!-- Le <router-view> va afficher les sous-composants ici -->
         <router-view />
       </div>
     </div>
-  <!--</div>-->
+  </div>
 </template>
 
 <style>
