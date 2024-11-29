@@ -126,8 +126,7 @@ const onModify = async () => {
     email: user.value.email,
     role: user.value.role.value,
   };
-
-<<<<<<< HEAD
+  
   const declareSick = async (userId, currentValue) => {
   try {
     console.log(currentValue)
