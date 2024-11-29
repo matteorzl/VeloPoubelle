@@ -165,6 +165,28 @@ import { color } from 'chart.js/helpers';
   }
   };
 
+  const declareSick = async (userId, currentValue) => {
+  try {
+    console.log(currentValue)
+    if (user) {
+      user.isSick = currentValue;
+
+      // Envoyer la mise à jour au serveur
+      await axios.patch(`/api/user/sick/${userId}`, { isSick: currentValue });
+
+      // Afficher un message de succès
+      const message = currentValue === 1 
+        ? 'Utilisateur déclaré malade avec succès.' 
+        : 'Utilisateur déclaré rétabli avec succès.';
+      showSuccess(message);
+      getUsers()
+    }
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour du statut de maladie :', error);
+    alert('Une erreur est survenue.');
+  }
+};
+
   const showWarn = (message) => {
     toast.add({ severity: 'error', summary: "Message d'erreur", detail: message, life: 3000 });
   };
@@ -191,6 +213,21 @@ import { color } from 'chart.js/helpers';
               <Column field="nom" header="Nom"></Column>
               <Column field="email" header="Email"></Column>
               <Column field="role" header="Role"></Column>
+              <Column field="isSick" header="Malade">
+                <template #body="slotProps">
+                  {{ slotProps.data.isSick === 1 ? 'Oui' : 'Non' }}
+                </template>
+              </Column>
+              <Column style="width: 10%; min-width: 8rem">
+                <template #body="slotProps">
+                  <Button 
+                    :label="slotProps.data.isSick === 0 ? 'Déclarer Malade' : 'Déclarer Rétabli'" 
+                    :class="slotProps.data.isSick === 0 ? 'btn btn-outline-info' : 'btn btn-outline-success'" 
+                    :severity="slotProps.data.isSick === 0 ? 'secondary' : 'success'"
+                    @click="declareSick(slotProps.data.id_utilisateur, slotProps.data.isSick === 0 ? 1 : 0)" 
+                  />
+                </template>
+              </Column>
               <Column style="width: 10%; min-width: 8rem">
                 <template #body="slotProps">
                   <Button label="Modifier" severity="warn" @click="modifyUser(slotProps.data.id_utilisateur ,'top')" class="btn btn-outline-warning"/>

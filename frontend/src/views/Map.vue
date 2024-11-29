@@ -16,7 +16,7 @@
         <tr>
           <th>#</th>
           <th>Trajets</th>
-          <th>Action</th>
+          <th>Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -28,12 +28,27 @@
             </ul>
           </td>
           <td>
-            <!-- Bouton pour afficher le trajet -->
             <button @click="displayRoute(index)" class="custombutton">Voir</button>
+            <select 
+              v-model="assignments[index]" 
+              class="custominput" 
+              @change="updateAssignment(index)"
+              style="margin-left: 10px;"
+            >
+              <option value="" disabled>Choisissez un cycliste</option>
+              <option 
+                v-for="cyclist in cyclistes" 
+                :key="cyclist.id_utilisateur" 
+                :value="cyclist.id_utilisateur"
+              >
+                {{ cyclist.nom }}
+              </option>
+            </select>
           </td>
         </tr>
       </tbody>
     </table>
+
       <button @click="saveTournees" class="custombutton">Enregistrer les tournées</button>
 
     </div>
@@ -108,18 +123,30 @@ const loadRoute = async (): Promise<Station[]> => {
 
 };
 
+const assignments = ref<Record<number, number>>({}); // Clé : index de la route, Valeur : ID du cycliste
 
-const assignments = ref<Record<number,string>>({}); // Clé : index de la route, Valeur : ID du cycliste
+const updateAssignment = (routeIndex: number) => {
+  const assignedCyclistId = assignments.value[routeIndex];
 
-const assignRoutes = () => {
-  for (const [routeIndex, cyclistName] of Object.entries(assignments.value)) {
-    if (!cyclistName) {
-      console.warn(`La route ${routeIndex} n'a pas été assignée.`);
-      continue;
-    }
-    console.log(`Route ${routeIndex} assignée à Cycliste ${cyclistName}`);
+  // Vérifiez si un cycliste a bien été sélectionné
+  if (!assignedCyclistId) {
+    console.warn("Aucun cycliste sélectionné pour cette tournée.");
+    return;
   }
+
+  // Envoyez la mise à jour au backend
+  axios
+    .patch(`/api/tournee/${routeIndex + 1}`, { id_utilisateur: assignedCyclistId })
+    .then(() => {
+      alert(`Tournée ${routeIndex + 1} attribuée avec succès à l'utilisateur ${assignedCyclistId}.`);
+    })
+    .catch(error => {
+      console.log(error);
+      alert("Erreur lors de l'attribution.");
+    });
 };
+
+
 
 const CyclistAmount = async () => {
 
@@ -147,10 +174,24 @@ const saveTournees = async () => {
     return;
   }
 
+  // Vérifiez que toutes les tournées ont un cycliste assigné
+  const unassignedRoutes = formattedRoutes.value.filter(
+    (_, index) => !assignments.value[index]
+  );
+
+  if (unassignedRoutes.length > 0) {
+    alert(
+      "Toutes les tournées doivent être attribuées à un cycliste avant l'enregistrement.\n" +
+      `Tournées non attribuées : ${unassignedRoutes.map((_, i) => `#${i + 1}`).join(", ")}`
+    );
+    return;
+  }
+
+  // Préparez les données pour l'enregistrement
   const tournees = formattedRoutes.value.map((route, index) => ({
-    id_tournee: index + 1, // ID tournées
+    id_tournee: index + 1, // ID de la tournée
     date: new Date().toISOString().split('T')[0], // Date actuelle
-    velo_id: null, // Pas de vélo assigné pour l'instant
+    utilisateur_id: assignments.value[index], // Cycliste assigné
     etat: 'planifiee', // État initial
     nom: `${route}`, // Nom de la tournée
   }));
@@ -179,6 +220,7 @@ const saveTournees = async () => {
 };
 
 
+
 const clearMap = () => {
   if (!map.value) return;
 
@@ -187,7 +229,7 @@ const clearMap = () => {
     if (marker && map.value) {
       marker.removeFrom(map.value);
     }
-  });
+  });const assignments = ref<Record<number, number>>({});
   stationMarkers.value = [];
 
   // Effacez tous les marqueurs des vélos
@@ -221,51 +263,51 @@ const showRouteOnMap = (route: Station[], color: string) => {
 };
 
 
-const showSelectedCyclistRoute = () => {
-  if (!map.value) return;
+// const showSelectedCyclistRoute = () => {
+//   if (!map.value) return;
 
-  // Effacez les tracés actuels de la carte
-  clearMap();
+//   // Effacez les tracés actuels de la carte
+//   clearMap();
 
-  // Vérifiez si un cycliste est sélectionné
-  if (!selectedCyclist.value) return;
+//   // Vérifiez si un cycliste est sélectionné
+//   if (!selectedCyclist.value) return;
 
-  // Trouvez la route assignée au cycliste sélectionné
-  const assignedRouteEntry = Object.entries(assignments.value).find(
-    ([, cyclistId]) => cyclistId === selectedCyclist.value
-  );
+//   // Trouvez la route assignée au cycliste sélectionné
+//   const assignedRouteEntry = Object.entries(assignments.value).find(
+//     ([, cyclistId]) => cyclistId === selectedCyclist.value
+//   );
 
-  if (!assignedRouteEntry) {
-    console.warn("Aucune route assignée à ce cycliste.");
-    return;
-  }
+//   if (!assignedRouteEntry) {
+//     console.warn("Aucune route assignée à ce cycliste.");
+//     return;
+//   }
 
-  const routeIndex = parseInt(assignedRouteEntry[0]); // Obtenez l'index de la route
-  const route = cyclistRoutes.value[routeIndex]; // Récupérez la route correspondante
+//   const routeIndex = parseInt(assignedRouteEntry[0]); // Obtenez l'index de la route
+//   const route = cyclistRoutes.value[routeIndex]; // Récupérez la route correspondante
 
-  if (!route || route.length === 0) {
-    console.warn("La route assignée est vide.");
-    return;
-  }
+//   if (!route || route.length === 0) {
+//     console.warn("La route assignée est vide.");
+//     return;
+//   }
 
-  // Affichez la route sur la carte
-  const routeColor = `hsl(${(360 / cyclistRoutes.value.length) * routeIndex}, 70%, 50%)`;
-  showRouteOnMap(route, routeColor);
+//   // Affichez la route sur la carte
+//   const routeColor = `hsl(${(360 / cyclistRoutes.value.length) * routeIndex}, 70%, 50%)`;
+//   showRouteOnMap(route, routeColor);
 
-  // Ajoutez un marqueur de départ (optionnel)
-  const bikeIcon = L.icon({
-    iconUrl: '/src/assets/bike.png',
-    iconSize: [32, 32],
-    iconAnchor: [16, 16],
-  });
+//   // Ajoutez un marqueur de départ (optionnel)
+//   const bikeIcon = L.icon({
+//     iconUrl: '/src/assets/bike.png',
+//     iconSize: [32, 32],
+//     iconAnchor: [16, 16],
+//   });
 
-  const marker = L.marker([route[0].lat, route[0].lng], { icon: bikeIcon });
-  marker.addTo(map.value);
-  bikeMarkers.value.push(marker);
+//   const marker = L.marker([route[0].lat, route[0].lng], { icon: bikeIcon });
+//   marker.addTo(map.value);
+//   bikeMarkers.value.push(marker);
 
-  // Animer le vélo sur la route
-  animateBikeAlongRoute(marker, route);
-};
+//   // Animer le vélo sur la route
+//   animateBikeAlongRoute(marker, route);
+// };
 
 
 
@@ -447,19 +489,6 @@ onMounted(() => {
 });
 
 </script>
-
-<template>
-  <div class="metro-map">
-    <button 
-      @click="generateRoutes" 
-      :disabled="isGeneratingRoutes"
-      class="generate-routes-btn"
-    >
-      {{ isGeneratingRoutes ? 'Génération en cours...' : 'Générer Itinéraires' }}
-    </button>
-    <div id="map" class="map-container"></div>
-  </div>
-</template>
 
 <style scoped>
 

@@ -118,13 +118,17 @@ const router = useRouter()
         </div>
         <div>
           <div class="nav_list">
+            <a @click="() => router.push('/app/mapcyclist')" class="nav_link">
+              <i class="bx bx-stats nav_icon"></i>
+              <span class="nav_name">Mon itinéraire</span>
+            </a>
             <a @click="() => router.push('/app/users')" class="nav_link" v-if="role === 'RH' || role === 'administrateur'">
               <i class="bx bx-user nav_icon"></i>
               <span class="nav_name">Utilisateurs</span>
             </a>
             <a @click="() => router.push('/app/map')" class="nav_link">
-              <i class="bx bx-chart nav_icon"></i>
-              <span class="nav_name">Mes trajets</span>
+              <i class="bx bx-map-alt nav_icon"></i>
+              <span class="nav_name">Trajets</span>
             </a>
           </div>
         </div>
@@ -133,7 +137,7 @@ const router = useRouter()
             <span class="nav_name">Changer le mot de passe</span>
           </div>
           <div @click="logout" class="nav_link">
-            <i class="bx bx-log-out nav_icon"></i>
+            <i class="bx bx-log-out-circle nav_icon"></i>
             <span class="nav_name">Se déconnecter</span>
           </div>
         </div>

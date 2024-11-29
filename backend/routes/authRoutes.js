@@ -8,7 +8,7 @@ const router = express.Router();
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',  
-    database: 'velopobelle',
+    database: 'velopoubelle',
     password: '',
     waitForConnections: true,
     connectionLimit: 10,
@@ -88,7 +88,7 @@ router.get('/cycliste', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      'SELECT nom, prenom, id_utilisateur FROM utilisateur WHERE role = ?',
+      'SELECT nom, prenom, id_utilisateur ,isSick FROM utilisateur WHERE role = ? AND isSick = 0',
       ['cycliste']
     );
     connection.release();
@@ -137,7 +137,7 @@ router.get('/users', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      'SELECT id_utilisateur, nom, prenom, email, role FROM Utilisateur' // Select only necessary fields
+      'SELECT id_utilisateur, nom, prenom, email, role, isSick FROM Utilisateur' // Select only necessary fields
     );
     connection.release();
 
@@ -269,18 +269,18 @@ router.post('/tournee', async (req, res) => {
   }
 
   try {
-    // Supprimer les anciennes données
+    await connection.execute('DELETE FROM Trajet');
     await connection.execute('DELETE FROM Tournee');
 
     // Réinitialiser l'auto-incrément
     await connection.execute('ALTER TABLE Tournee AUTO_INCREMENT = 1');
 
     // Préparer les données pour l'insertion
-    const values = tournees.map(t => [t.date, t.velo_id, t.etat, t.nom]);
+    const values = tournees.map(t => [t.date, t.utilisateur_id, t.etat, t.nom]);
     const placeholders = values.map(() => '(?, ?, ?, ?)').join(', ');
 
     const query = `
-      INSERT INTO Tournee (date, velo_id, etat, nom)
+      INSERT INTO Tournee (date, cycliste_id, etat, nom)
       VALUES ${placeholders}
     `;
 
@@ -305,8 +305,6 @@ router.post('/trajet', async (req, res) => {
   }
 
   try {
-    // Supprimer les anciennes données
-    await connection.execute('DELETE FROM Trajet');
 
     // Réinitialiser l'auto-incrément
     await connection.execute('ALTER TABLE Trajet AUTO_INCREMENT = 1');
@@ -329,5 +327,64 @@ router.post('/trajet', async (req, res) => {
   }
 });
 
+router.patch('/user/sick/:id', async (req, res) => {
+  try {
+    const userId = req.params.id;
+    const { isSick } = req.body; // Récupère la valeur à mettre à jour (0 ou 1)
 
+    if (isSick !== 0 && isSick !== 1) {
+      return res.status(400).json({ error: "Valeur invalide pour isSick" });
+    }
+
+    const connection = await pool.getConnection();
+
+    // Mettre à jour le statut de maladie
+    const [result] = await connection.execute(
+      'UPDATE Utilisateur SET isSick = ? WHERE id_utilisateur = ?',
+      [isSick, userId]
+    );
+    connection.release();
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "Utilisateur introuvable" });
+    }
+
+    const message = isSick === 1 
+      ? "Utilisateur marqué comme malade" 
+      : "Utilisateur marqué comme rétabli";
+    res.status(200).json({ message });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Erreur interne du serveur" });
+  }
+});
+
+router.patch('/tournee/:tourneeId', async (req, res) => {
+  const { tourneeId } = req.params;
+  const { id_utilisateur } = req.body;
+
+  if (!id_utilisateur || !tourneeId) {
+    return res.status(400).json({ error: "ID utilisateur ou ID tournée manquant." });
+  }
+
+  try {
+    const connection = await pool.getConnection();
+
+    const result = await connection.execute(
+      'UPDATE Tournee SET cycliste_id = ? WHERE id_tournee = ?',
+      [id_utilisateur, tourneeId]
+    );
+
+    connection.release();
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Tournée introuvable." });
+    }
+
+    res.status(200).json({ message: "Cycliste attribué avec succès.", tournee: result });
+  } catch (error) {
+    console.error("Erreur lors de l'attribution :", error);
+    res.status(500).json({ error: "Erreur serveur lors de l'attribution." });
+  }
+});
 module.exports = router;
