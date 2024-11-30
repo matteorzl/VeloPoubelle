@@ -119,15 +119,7 @@ const onDelete = async () => {
   }
 };
 
-const onModify = async () => {
-  const updatedUser = {
-    nom: user.value.nom,
-    prenom: user.value.prenom,
-    email: user.value.email,
-    role: user.value.role.value,
-  };
-  
-  const declareSick = async (userId, currentValue) => {
+const declareSick = async (userId, currentValue) => {
   try {
     console.log(currentValue)
     if (user) {
@@ -145,15 +137,17 @@ const onModify = async () => {
     }
   } catch (error) {
     console.error('Erreur lors de la mise à jour du statut de maladie :', error);
-    alert('Une erreur est survenue.');
+    message.value = 'Une erreur est survenue.';
+    showWarn(message);
   }
 };
 
-  const showWarn = (message) => {
-    toast.add({ severity: 'error', summary: "Message d'erreur", detail: message, life: 3000 });
-  };
-  const showSuccess = (message) => {
-    toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
+const onModify = async () => {
+  const updatedUser = {
+    nom: user.value.nom,
+    prenom: user.value.prenom,
+    email: user.value.email,
+    role: user.value.role.value,
   };
 
   try {

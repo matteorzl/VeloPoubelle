@@ -296,6 +296,60 @@ router.post('/tournee', async (req, res) => {
   }
 });
 
+router.get('/tournee', async (req, res) => {
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(`
+      SELECT 
+          t.id_tournee,
+          t.nom AS nom_tournee,
+          u.nom AS nom_cycliste,
+          u.prenom AS prenom_cycliste,
+          COUNT(tr.id_trajet) AS nombre_arrets
+      FROM 
+          Tournee t
+      LEFT JOIN 
+          Utilisateur u ON t.cycliste_id = u.id_utilisateur
+      LEFT JOIN 
+          Trajet tr ON t.id_tournee = tr.tournee_id
+      GROUP BY 
+          t.id_tournee, t.nom, u.nom, u.prenom
+      ORDER BY 
+          t.id_tournee;
+    `);
+    connection.release();
+
+    // Transforme les résultats pour les rendre plus lisibles côté frontend
+    const tournees = rows.map(row => ({
+      id_tournee: row.id_tournee,
+      nom: row.nom_tournee,
+      cycliste: `${row.prenom_cycliste} ${row.nom_cycliste}`.trim(),
+      nombre_arrets: row.nombre_arrets,
+    }));
+
+    res.status(200).json({ rows: tournees });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des tournées:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+});
+
+router.get('/tournee/:id/trajets', async (req, res) => {
+  const tourneeId = req.params.id;
+  try {
+    const connection = await pool.getConnection();
+    const [rows] = await connection.execute(
+      'SELECT t.lat, t.lng, a.nom FROM Trajet t JOIN Arret a ON t.id_arret = a.id_arret WHERE t.tournee_id = ? ORDER BY t.ordre_passage',
+      [tourneeId]
+    );
+    connection.release();
+    res.status(200).json({ trajets: rows });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des trajets:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+});
+
 router.post('/trajet', async (req, res) => {
   const { trajets } = req.body;
   const connection = await pool.getConnection();
@@ -309,11 +363,11 @@ router.post('/trajet', async (req, res) => {
     // Réinitialiser l'auto-incrément
     await connection.execute('ALTER TABLE Trajet AUTO_INCREMENT = 1');
 
-    const values = trajets.map(t => [t.tournee_id, t.lat, t.lng, t.ordre_passage]);
-    const placeholders = values.map(() => '(?, ?, ?, ?)').join(', ');
+    const values = trajets.map(t => [t.tournee_id, t.id_arret, t.lat, t.lng, t.ordre_passage]);
+    const placeholders = values.map(() => '(?, ?, ?, ?, ?)').join(', ');
 
     const query = `
-      INSERT INTO Trajet (tournee_id, lat, lng, ordre_passage)
+      INSERT INTO Trajet (tournee_id, id_arret, lat, lng, ordre_passage)
       VALUES ${placeholders}
     `;
 

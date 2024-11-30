@@ -1,76 +1,90 @@
 <template>
   <div style="width: 100%; float: right;">
     <div id="map" class="map-container"></div>
-    <!-- Bouton pour calculer les itinéraires -->
     <div class="controls" style="margin: 5%">
       <div v-if="numberOfCyclists === 0">Il n'y a aucun cycliste dans votre base</div>
       <div v-else>Nombre de cycliste disponible : {{ numberOfCyclists }}</div>
       <button @click="calculateRoutes" class="custombutton">Calculer les itinéraires</button>
+      <!-- Tableau des itinéraires calculés -->
+      <div class="flex flex-column items-center justify-content-center" v-if="!showRecordedRoutes">
+        <h3>Itinéraires calculés</h3>
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>Trajets</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(route, index) in formattedRoutes" :key="index">
+              <td>{{ index + 1 }}</td>
+              <td>{{ route }}</td>
+              <td class="flex justify-content-evenly  ">
+                <button @click="displayRoute(index)" class="custombutton w-25">Voir</button>
+                <select 
+                  v-model="assignments[index]" 
+                  class="custominput" 
+                  @change="updateAssignment(index)"
+                >
+                  <option value="" disabled>Choisissez un cycliste</option>
+                  <option 
+                    v-for="cyclist in cyclistes" 
+                    :key="cyclist.id_utilisateur" 
+                    :value="cyclist.id_utilisateur"
+                  >
+                    {{ cyclist.nom }}
+                  </option>
+                </select>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="flex justify-content-evenly  ">
+          <button @click="saveTournees" class="custombutton">Enregistrer les tournées</button>
+          <button @click="showRecordedRoutes = true" class="custombutton">Annuler</button>
+        </div>
+      </div>
+
+      <!-- Tableau des tournées enregistrées -->
+      <div v-else>
+        <h3>Tournées enregistrées</h3>
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>ID Tournée</th>
+              <th>Cycliste</th>
+              <th>Nom</th>
+              <th>Nombre d'arrêts</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="route in recordedRoutes" :key="route.idTournee">
+              <td>{{ route.idTournee }}</td>
+              <td>{{ route.cycliste }}</td>
+              <td>{{ route.nom }}</td>
+              <td>{{ route.stops }}</td>
+              <td>
+                <button @click="showRecordedRoute(route.idTournee)" class="custombutton">Voir</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
     </div>
-
-    <!-- Sélection des cyclistes -->
-    <div v-if="formattedRoutes.length > 0" class="d-flex flex-column justify-content-center" style="margin: 5%">
-      <h3>Itinéraires calculés</h3>
-      <table class="custom-table">
-      <thead>
-        <tr>
-          <th>#</th>
-          <th>Trajets</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(route, index) in formattedRoutes" :key="index">
-          <td>{{ index + 1 }}</td>
-          <td>
-            <ul>
-              <li>Trajet : {{ route }}</li>
-            </ul>
-          </td>
-          <td>
-            <button @click="displayRoute(index)" class="custombutton">Voir</button>
-            <select 
-              v-model="assignments[index]" 
-              class="custominput" 
-              @change="updateAssignment(index)"
-              style="margin-left: 10px;"
-            >
-              <option value="" disabled>Choisissez un cycliste</option>
-              <option 
-                v-for="cyclist in cyclistes" 
-                :key="cyclist.id_utilisateur" 
-                :value="cyclist.id_utilisateur"
-              >
-                {{ cyclist.nom }}
-              </option>
-            </select>
-          </td>
-        </tr>
-      </tbody>
-    </table>
-
-      <button @click="saveTournees" class="custombutton">Enregistrer les tournées</button>
-
-    </div>
-
-    
-    <!-- Carte -->
-    
   </div>
 </template>
 
 
 <script setup lang="ts">
 import axios from 'axios';
-axios.defaults.baseURL = 'http://localhost:3000';
-
-import { onMounted, ref } from 'vue';
-
+import { onMounted, ref, type Ref } from 'vue';
 import L from 'leaflet';
-
 import { optimizeRoute } from '../components/dijkstra';
-
 import 'leaflet/dist/leaflet.css';
+import { useToast } from "primevue/usetoast";
+axios.defaults.baseURL = 'http://localhost:3000';
 
 
 interface Station {
@@ -85,64 +99,57 @@ interface Station {
 
 }
 
+const message = ref('');
+const toast = useToast();
 const map = ref<L.Map>();
-
 const numberOfCyclists = ref();
-
 const cyclistes = ref();
-
 const selectedCyclist = ref('');
-
 const bikeMarkers = ref<L.Marker[]>([]);
-
 const routeLines = ref<L.Polyline[]>([]);
-
 const allStations = ref<Station[]>([]);
-
 const cyclistRoutes = ref<Station[][]>([]);
-
 const formattedRoutes = ref<string[]>([]);
-
 const stationMarkers = ref<L.Marker[]>([]);
+const assignments = ref<Record<number, number>>({});
+const showRecordedRoutes = ref(false);
+const recordedRoutes = ref([]);
 
 const loadRoute = async (): Promise<Station[]> => {
-
   try {
-
     const response = await axios.get('/api/map/arret');
-
     return response.data.rows || [];
-
   } catch (error) {
-
     console.error('Erreur lors du chargement de l\'itinéraire:', error);
-
     return [];
-
   }
 
 };
 
-const assignments = ref<Record<number, number>>({}); // Clé : index de la route, Valeur : ID du cycliste
+const showWarn = (message: any) => {
+  toast.add({ severity: 'error', summary: "Message d'erreur", detail: message });
+};
+const showSuccess = (message: any) => {
+  toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
+};
 
 const updateAssignment = (routeIndex: number) => {
   const assignedCyclistId = assignments.value[routeIndex];
 
-  // Vérifiez si un cycliste a bien été sélectionné
   if (!assignedCyclistId) {
     console.warn("Aucun cycliste sélectionné pour cette tournée.");
     return;
   }
-
-  // Envoyez la mise à jour au backend
   axios
     .patch(`/api/tournee/${routeIndex + 1}`, { id_utilisateur: assignedCyclistId })
     .then(() => {
-      alert(`Tournée ${routeIndex + 1} attribuée avec succès à l'utilisateur ${assignedCyclistId}.`);
+      message.value = `Tournée ${routeIndex + 1} attribuée avec succès à l'utilisateur ${assignedCyclistId}.`;
+      showSuccess(message)
     })
     .catch(error => {
       console.log(error);
-      alert("Erreur lors de l'attribution.");
+      message.value ="Erreur lors de l'attribution.";
+      showWarn(message)
     });
 };
 
@@ -168,9 +175,27 @@ try {
 
 };
 
+const fetchRecordedRoutes = async () => {
+  try {
+    const response = await axios.get('/api/tournee');
+    console.log(response)
+    recordedRoutes.value = response.data.rows.map((route: any) => ({
+      idTournee: route.id_tournee,
+      nom: route.nom,
+      cycliste: route.cycliste,
+      stops: route.nombre_arrets,
+    }));
+    showRecordedRoutes.value = true;
+  } catch (error) {
+    console.error('Erreur lors de la récupération des tournées enregistrées:', error);
+    showWarn('Impossible de charger les tournées.');
+  }
+};
+
 const saveTournees = async () => {
   if (!formattedRoutes.value.length) {
-    alert("Aucun itinéraire à enregistrer.");
+    message.value = "Aucun itinéraire à enregistrer.";
+    showWarn(message)
     return;
   }
 
@@ -180,10 +205,10 @@ const saveTournees = async () => {
   );
 
   if (unassignedRoutes.length > 0) {
-    alert(
-      "Toutes les tournées doivent être attribuées à un cycliste avant l'enregistrement.\n" +
-      `Tournées non attribuées : ${unassignedRoutes.map((_, i) => `#${i + 1}`).join(", ")}`
-    );
+    message.value =
+      `"Toutes les tournées doivent être attribuées à un cycliste avant l'enregistrement.\n" +
+      Tournées non attribuées : ${unassignedRoutes.map((_, i) => `#${i + 1}`).join(", ")}`;
+      showWarn(message)
     return;
   }
 
@@ -193,12 +218,13 @@ const saveTournees = async () => {
     date: new Date().toISOString().split('T')[0], // Date actuelle
     utilisateur_id: assignments.value[index], // Cycliste assigné
     etat: 'planifiee', // État initial
-    nom: `${route}`, // Nom de la tournée
+    nom: route, // Nom de la tournée
   }));
 
   const trajets = cyclistRoutes.value.flatMap((route, tourneeIndex) => 
     route.map((station, order) => ({
       tournee_id: tourneeIndex + 1, // Associe à l'ID de la tournée
+      id_arret : station.id_arret,
       lat: station.lat,
       lng: station.lng,
       ordre_passage: order + 1, // Ordre de passage
@@ -208,18 +234,57 @@ const saveTournees = async () => {
   try {
     // Enregistrer les tournées
     const tourneeResponse = await axios.post('/api/tournee', { tournees });
-    alert(tourneeResponse.data.message || 'Tournées enregistrées avec succès.');
+    message.value = tourneeResponse.data.message
+    showSuccess(message)
 
     // Enregistrer les trajets
     const trajetResponse = await axios.post('/api/trajet', { trajets });
-    alert(trajetResponse.data.message || 'Trajets enregistrés avec succès.');
+    message.value = trajetResponse.data.message
+    showSuccess(message)
   } catch (error) {
     console.error('Erreur lors de l\'enregistrement:', error);
-    alert('Erreur lors de l\'enregistrement.');
+    message.value = 'Erreur lors de l\'enregistrement.';
+    showWarn(message)
   }
+  await fetchRecordedRoutes();
 };
 
+const showRecordedRoute = async (tourneeId: number) => {
+  try {
+    const response = await axios.get(`/api/tournee/${tourneeId}/trajets`);
+    const stations = response.data.trajets.map((stop: any) => ({
+      lat: stop.lat,
+      lng: stop.lng,
+      nom: stop.nom,
+    }));
+    if (stations.length === 0) {
+      showWarn('Aucun trajet disponible pour cette tournée.');
+      return;
+    }
+    if (!map.value) return;
 
+    // Clear existing markers and lines
+    stationMarkers.value.forEach(marker => marker.remove());
+    stationMarkers.value = [];
+    routeLines.value.forEach(line => line.remove());
+    routeLines.value = [];
+
+    // Add new markers and route
+    stations.forEach((station: { lat: number; lng: number; nom: any; }) => {
+      const marker = L.marker([station.lat, station.lng]).bindPopup(`<b>${station.nom}</b>`);
+      marker.addTo(map.value);
+      stationMarkers.value.push(marker);
+    });
+    const routeLine = L.polyline(stations.map((station: { lat: any; lng: any; }) => [station.lat, station.lng]), { color: 'blue' });
+    routeLine.addTo(map.value);
+    routeLines.value.push(routeLine);
+
+    map.value.fitBounds(routeLine.getBounds());
+  } catch (error) {
+    console.error('Erreur lors de la récupération du trajet:', error);
+    showWarn('Impossible d\'afficher le trajet.');
+  }
+};
 
 const clearMap = () => {
   if (!map.value) return;
@@ -229,7 +294,8 @@ const clearMap = () => {
     if (marker && map.value) {
       marker.removeFrom(map.value);
     }
-  });const assignments = ref<Record<number, number>>({});
+  });
+
   stationMarkers.value = [];
 
   // Effacez tous les marqueurs des vélos
@@ -364,6 +430,7 @@ const calculateRoutes = async () => {
       return 'Aucun trajet disponible';
     }
   });
+  showRecordedRoutes.value = false;
 };
 
 const displayRoute = (routeIndex: number) => {
@@ -473,6 +540,9 @@ const animateBikeAlongRoute = (marker: L.Marker, stations: Station[]) => {
 
 
 onMounted(() => {
+
+
+  fetchRecordedRoutes();
 
   map.value = L.map('map').setView([48.9111, 2.3055], 10);
 
