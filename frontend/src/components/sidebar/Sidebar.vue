@@ -118,7 +118,7 @@ const router = useRouter()
         </div>
         <div>
           <div class="nav_list">
-            <a @click="() => router.push('/app/mapcyclist')" class="nav_link">
+            <a @click="() => router.push('/app/mapcyclist')" class="nav_link" v-if="role === 'cycliste'">
               <i class="bx bx-stats nav_icon"></i>
               <span class="nav_name">Mon itinéraire</span>
             </a>
@@ -126,7 +126,7 @@ const router = useRouter()
               <i class="bx bx-user nav_icon"></i>
               <span class="nav_name">Utilisateurs</span>
             </a>
-            <a @click="() => router.push('/app/map')" class="nav_link">
+            <a @click="() => router.push('/app/map')" class="nav_link" v-if="role === 'gestionnaire_reseau' || role === 'administrateur'">
               <i class="bx bx-map-alt nav_icon"></i>
               <span class="nav_name">Trajets</span>
             </a>
