@@ -125,7 +125,7 @@ const loadRoute = async (): Promise<Station[]> => {
     const stations = response.data.rows || [];
     
     // Filtrer "Porte d'Ivry" pour qu'elle ne soit pas incluse dans les itinéraires
-    const porteIvry = stations.find(station => station.nom.toLowerCase() === "porte d'ivry");
+    const porteIvry = stations.find((station: { nom: string; }) => station.nom.toLowerCase() === "porte d'ivry");
 
     if (porteIvry) {
       // Ajoutez la "Porte d'Ivry" à la liste des marqueurs, mais pas pour les itinéraires
@@ -133,7 +133,7 @@ const loadRoute = async (): Promise<Station[]> => {
     }
 
     // Exclure "Porte d'Ivry" des stations pour les itinéraires
-    return stations.filter(station => station.nom.toLowerCase() !== "porte d'ivry");
+    return stations.filter((station: { nom: string; }) => station.nom.toLowerCase() !== "porte d'ivry");
   } catch (error) {
     console.error('Erreur lors du chargement de l\'itinéraire:', error);
     return [];
@@ -192,7 +192,8 @@ const fetchRecordedRoutes = async () => {
     showRecordedRoutes.value = true;
   } catch (error) {
     console.error('Erreur lors de la récupération des tournées enregistrées:', error);
-    showWarn('Impossible de charger les tournées.');
+    message.value ='Impossible de charger les tournées.';
+    showWarn(message)
   }
 };
 
@@ -426,6 +427,7 @@ const calculateRoutes = async () => {
       return 'Aucun trajet disponible';
     }
   });
+  showRecordedRoutes.value = false
 };
 
 
@@ -435,7 +437,7 @@ const toggleRouteDetails = (index: number) => {
   routeDetailsVisible.value[index] = !routeDetailsVisible.value[index];
 };
 
-const displayRoute = (routeIndex) => {
+const displayRoute = (routeIndex: number) => {
   if (!map.value) return;
 
   // Effacez tous les marqueurs et tracés actuels
