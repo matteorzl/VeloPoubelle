@@ -114,22 +114,38 @@ export function clusterStations(stations: Station[], maxDistance: number = 500):
 export function optimizeRoute(stations: Station[]): Station[] {
   if (stations.length <= 2) return stations;
 
-  const maxDistance = 500; // Max distance between stops
-  const clusters = clusterStations(stations, maxDistance);
+  // Identifier "Porte d'Ivry"
+  const porteDIvry = stations.find(
+    station => station.nom.toLowerCase() === "porte d'ivry"
+  );
+  if (!porteDIvry) {
+    throw new Error("L'arrêt 'Porte d'Ivry' est introuvable dans les stations.");
+  }
+
+  // Exclure Porte d'Ivry pour optimiser les autres arrêts
+  const filteredStations = stations.filter(
+    station => station.nom.toLowerCase() !== "porte d'ivry"
+  );
+
+  // Initialiser le chemin optimisé
   const optimizedPath: Station[] = [];
+  let remainingStations = [...filteredStations];
 
-  clusters.forEach(cluster => {
-    const graph = buildGraph(cluster, maxDistance);
-    const start = cluster[0].nom;
-    const end = cluster[cluster.length - 1].nom;
+  while (remainingStations.length > 0) {
+    // Prendre les 4 prochaines stations ou moins
+    const segment = remainingStations.slice(0, 4);
+    remainingStations = remainingStations.slice(4);
 
-    // Calculate optimal path within the cluster
-    const path = dijkstra(graph, start, end);
+    // Optimiser localement ces 4 stations
+    const localPath: Station[] = [porteDIvry, ...segment, porteDIvry];
+    optimizedPath.push(...localPath);
+  }
 
-    // Convert back to Station objects
-    const orderedStations = path.map(node => cluster.find(s => s.nom === node)!);
-    optimizedPath.push(...orderedStations);
-  });
+  // Ajouter Porte d'Ivry comme point final si absent
+  if (optimizedPath[optimizedPath.length - 1].id_arret !== porteDIvry.id_arret) {
+    optimizedPath.push(porteDIvry);
+  }
 
   return optimizedPath;
 }
+

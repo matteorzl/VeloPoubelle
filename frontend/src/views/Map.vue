@@ -1,12 +1,12 @@
 <template>
   <div style="width: 100%; float: right;">
     <div id="map" class="map-container"></div>
-    <div class="controls" style="margin: 5%">
+    <div class="controls" style="margin-left: 5%; margin-right: 5%; margin-top: 10px;">
       <div v-if="numberOfCyclists === 0">Il n'y a aucun cycliste dans votre base</div>
-      <div v-else>Nombre de cycliste disponible : {{ numberOfCyclists }}</div>
+      <div v-else>Nombre de cycliste disponible : <strong>{{ numberOfCyclists }}</strong></div>
       <button @click="calculateRoutes" class="custombutton">Calculer les itinéraires</button>
       <!-- Tableau des itinéraires calculés -->
-      <div class="flex flex-column items-center justify-content-center" v-if="!showRecordedRoutes">
+      <div class="flex flex-column items-center justify-content-center" v-if="!showRecordedRoutes" style="margin-left: 5%; margin-right: 5%; margin-top: 10px;">
         <h3>Itinéraires calculés</h3>
         <table class="custom-table">
           <thead>
@@ -22,6 +22,16 @@
               <td>{{ route }}</td>
               <td class="flex justify-content-evenly  ">
                 <button @click="displayRoute(index)" class="custombutton w-25">Voir</button>
+                <button @click="toggleRouteDetails(index)" class="custombutton" style="margin-left: 5px;">Afficher itinéraire complet</button>
+
+                <div v-if="routeDetailsVisible[index]" class="route-details">
+                  <ul>
+                    <li v-for="(station, stationIndex) in cyclistRoutes[index]" :key="stationIndex">
+                      {{ stationIndex + 1 }}. {{ station.nom }}
+                    </li>
+                  </ul>
+                </div>
+
                 <select 
                   v-model="assignments[index]" 
                   class="custominput" 
@@ -86,17 +96,11 @@ import 'leaflet/dist/leaflet.css';
 import { useToast } from "primevue/usetoast";
 axios.defaults.baseURL = 'http://localhost:3000';
 
-
 interface Station {
-
   id_arret: number;
-
   lat: number;
-
   lng: number;
-
   nom: string;
-
 }
 
 const message = ref('');
@@ -118,13 +122,24 @@ const recordedRoutes = ref([]);
 const loadRoute = async (): Promise<Station[]> => {
   try {
     const response = await axios.get('/api/map/arret');
-    return response.data.rows || [];
+    const stations = response.data.rows || [];
+    
+    // Filtrer "Porte d'Ivry" pour qu'elle ne soit pas incluse dans les itinéraires
+    const porteIvry = stations.find(station => station.nom.toLowerCase() === "porte d'ivry");
+
+    if (porteIvry) {
+      // Ajoutez la "Porte d'Ivry" à la liste des marqueurs, mais pas pour les itinéraires
+      stationMarkers.value.push(L.marker([porteIvry.lat, porteIvry.lng]).bindPopup(`<b>${porteIvry.nom}</b>`));
+    }
+
+    // Exclure "Porte d'Ivry" des stations pour les itinéraires
+    return stations.filter(station => station.nom.toLowerCase() !== "porte d'ivry");
   } catch (error) {
     console.error('Erreur lors du chargement de l\'itinéraire:', error);
     return [];
   }
-
 };
+
 
 const showWarn = (message: any) => {
   toast.add({ severity: 'error', summary: "Message d'erreur", detail: message });
@@ -153,26 +168,15 @@ const updateAssignment = (routeIndex: number) => {
     });
 };
 
-
-
 const CyclistAmount = async () => {
-
-try {
-
-  const response = await axios.get('/api/cycliste');
-
-  numberOfCyclists.value = response.data.count;
-
-  cyclistes.value = response.data.rows
-
-} catch (error) {
-
-  console.error('Erreur lors du chargement de l\'itinéraire:', error);
-
-  return [];
-
-}
-
+  try {
+    const response = await axios.get('/api/cycliste');
+    numberOfCyclists.value = response.data.count;
+    cyclistes.value = response.data.rows
+  } catch (error) {
+    console.error('Erreur lors du chargement de l\'itinéraire:', error);
+    return [];
+  }
 };
 
 const fetchRecordedRoutes = async () => {
@@ -199,7 +203,6 @@ const saveTournees = async () => {
     return;
   }
 
-  // Vérifiez que toutes les tournées ont un cycliste assigné
   const unassignedRoutes = formattedRoutes.value.filter(
     (_, index) => !assignments.value[index]
   );
@@ -212,32 +215,29 @@ const saveTournees = async () => {
     return;
   }
 
-  // Préparez les données pour l'enregistrement
   const tournees = formattedRoutes.value.map((route, index) => ({
-    id_tournee: index + 1, // ID de la tournée
-    date: new Date().toISOString().split('T')[0], // Date actuelle
-    utilisateur_id: assignments.value[index], // Cycliste assigné
-    etat: 'planifiee', // État initial
-    nom: route, // Nom de la tournée
+    id_tournee: index + 1,
+    date: new Date().toISOString().split('T')[0],
+    utilisateur_id: assignments.value[index],
+    etat: 'planifiee',
+    nom: route,
   }));
 
   const trajets = cyclistRoutes.value.flatMap((route, tourneeIndex) => 
     route.map((station, order) => ({
-      tournee_id: tourneeIndex + 1, // Associe à l'ID de la tournée
+      tournee_id: tourneeIndex + 1,
       id_arret : station.id_arret,
       lat: station.lat,
       lng: station.lng,
-      ordre_passage: order + 1, // Ordre de passage
+      ordre_passage: order + 1,
     }))
   );
 
   try {
-    // Enregistrer les tournées
     const tourneeResponse = await axios.post('/api/tournee', { tournees });
     message.value = tourneeResponse.data.message
     showSuccess(message)
 
-    // Enregistrer les trajets
     const trajetResponse = await axios.post('/api/trajet', { trajets });
     message.value = trajetResponse.data.message
     showSuccess(message)
@@ -263,13 +263,11 @@ const showRecordedRoute = async (tourneeId: number) => {
     }
     if (!map.value) return;
 
-    // Clear existing markers and lines
     stationMarkers.value.forEach(marker => marker.remove());
     stationMarkers.value = [];
     routeLines.value.forEach(line => line.remove());
     routeLines.value = [];
 
-    // Add new markers and route
     stations.forEach((station: { lat: number; lng: number; nom: any; }) => {
       const marker = L.marker([station.lat, station.lng]).bindPopup(`<b>${station.nom}</b>`);
       marker.addTo(map.value);
@@ -278,7 +276,7 @@ const showRecordedRoute = async (tourneeId: number) => {
     const routeLine = L.polyline(stations.map((station: { lat: any; lng: any; }) => [station.lat, station.lng]), { color: 'blue' });
     routeLine.addTo(map.value);
     routeLines.value.push(routeLine);
-
+ 
     map.value.fitBounds(routeLine.getBounds());
   } catch (error) {
     console.error('Erreur lors de la récupération du trajet:', error);
@@ -289,7 +287,6 @@ const showRecordedRoute = async (tourneeId: number) => {
 const clearMap = () => {
   if (!map.value) return;
 
-  // Effacez tous les marqueurs des stations
   stationMarkers.value.forEach(marker => {
     if (marker && map.value) {
       marker.removeFrom(map.value);
@@ -298,7 +295,6 @@ const clearMap = () => {
 
   stationMarkers.value = [];
 
-  // Effacez tous les marqueurs des vélos
   bikeMarkers.value.forEach(marker => {
     if (marker && map.value) {
       marker.removeFrom(map.value);
@@ -306,7 +302,6 @@ const clearMap = () => {
   });
   bikeMarkers.value = [];
 
-  // Effacez toutes les lignes de trajet
   routeLines.value.forEach(line => {
     if (line && map.value) {
       line.removeFrom(map.value);
@@ -375,8 +370,6 @@ const showRouteOnMap = (route: Station[], color: string) => {
 //   animateBikeAlongRoute(marker, route);
 // };
 
-
-
 const calculateRoutes = async () => {
   if (!map.value) return;
 
@@ -394,46 +387,55 @@ const calculateRoutes = async () => {
 
     allStations.value = Array.from(uniqueStations.values());
 
-    stationMarkers.value.forEach(marker => {
-      if (marker && map.value) {
-        marker.removeFrom(map.value);
-      }
-    });
+    // Ajout de "Porte d'Ivry" à la carte sans la compter pour l'assignation
+    const porteIvry = {
+      id_arret: 49,
+      lat: 48.8179,
+      lng: 2.3703,
+      nom: 'Porte d\'Ivry',
+    };
+    if (!allStations.value.find(s => s.id_arret === porteIvry.id_arret)) {
+      allStations.value.unshift(porteIvry);
+    }
 
-    stationMarkers.value = [];
-    allStations.value.forEach(station => {
-      if (!map.value) return;
-      const marker = L.marker([station.lat, station.lng]).bindPopup(`<b>${station.nom}</b>`);
-      marker.addTo(map.value);
-      stationMarkers.value.push(marker);
-    });
+    // Ajout de marqueur pour "Porte d'Ivry" (ne sera pas comptabilisé pour les itinéraires)
+    L.marker([porteIvry.lat, porteIvry.lng]).bindPopup(`<b>${porteIvry.nom}</b>`).addTo(map.value);
   }
 
   if (numberOfCyclists.value <= 0) return;
 
-  const stationsPerCyclist = Math.ceil(allStations.value.length / numberOfCyclists.value);
+  // Calcul du nombre de stations par cycliste en excluant "Porte d'Ivry"
+  const stationsWithoutPorteIvry = allStations.value.filter(station => station.nom.toLowerCase() !== "porte d'ivry");
+  const stationsPerCyclist = Math.ceil(stationsWithoutPorteIvry.length / numberOfCyclists.value);
 
   cyclistRoutes.value = Array.from({ length: numberOfCyclists.value }, (_, i) => {
     const start = i * stationsPerCyclist;
-    const end = Math.min(start + stationsPerCyclist, allStations.value.length);
-    const stationsGroup = allStations.value.slice(start, end);
-    return optimizeRoute(stationsGroup);
+    const end = Math.min(start + stationsPerCyclist, stationsWithoutPorteIvry.length);
+    const stationsGroup = stationsWithoutPorteIvry.slice(start, end);
+
+    // Ajout de "Porte d'Ivry" au début et à la fin de chaque itinéraire
+    return optimizeRoute([allStations.value[0], ...stationsGroup, allStations.value[0]]);
   });
 
-  // Formattez les trajets
   formattedRoutes.value = cyclistRoutes.value.map(route => {
     if (route.length > 1) {
-      return `${route[0].nom} - ${route[route.length - 1].nom}`;
+      return `${route[1].nom} - ${route[route.length - 2].nom}`;
     } else if (route.length === 1) {
       return `Point unique : "${route[0].nom}"`;
     } else {
       return 'Aucun trajet disponible';
     }
   });
-  showRecordedRoutes.value = false;
 };
 
-const displayRoute = (routeIndex: number) => {
+
+const routeDetailsVisible = ref<boolean[]>([]);
+
+const toggleRouteDetails = (index: number) => {
+  routeDetailsVisible.value[index] = !routeDetailsVisible.value[index];
+};
+
+const displayRoute = (routeIndex) => {
   if (!map.value) return;
 
   // Effacez tous les marqueurs et tracés actuels
@@ -446,150 +448,125 @@ const displayRoute = (routeIndex: number) => {
     return;
   }
 
+  // Tableau pour filtrer les arrêts, en ajoutant "Porte d'Ivry" toutes les 4 stations
+  let filteredRoute = [];
+  let porteDIvryIncluded = false;
+
+  // Ajoutez les arrêts tout en garantissant que "Porte d'Ivry" est ajouté tous les 4 arrêts
+  for (let i = 0; i < route.length; i++) {
+    const station = route[i];
+
+    // Ajoutez "Porte d'Ivry" uniquement tous les 4 arrêts
+    if (station.nom === "Porte d'Ivry" && (filteredRoute.length === 0 || filteredRoute.length % 4 === 0)) {
+      filteredRoute.push(station);
+      continue;  // Ne pas ajouter de "Porte d'Ivry" deux fois de suite
+    }
+
+    // Ajoutez les autres arrêts normalement
+    filteredRoute.push(station);
+  }
+
   // Couleur unique pour le trajet
   const color = `hsl(${(360 / cyclistRoutes.value.length) * routeIndex}, 70%, 50%)`;
 
-  // Ajoutez les marqueurs pour les stations du trajet
-  route.forEach(station => {
+  // Ajoutez les marqueurs pour les stations filtrées avec numérotation
+  filteredRoute.forEach((station, index) => {
     const marker = L.marker([station.lat, station.lng]).bindPopup(`<b>${station.nom}</b>`);
+
+    // Ajouter un numéro pour chaque station
+    marker.bindTooltip(`${index + 1}`, {
+      permanent: true,
+      direction: "center",
+      className: "marker-tooltip"
+    });
+
     marker.addTo(map.value);
     stationMarkers.value.push(marker);
   });
 
-  // Tracez une ligne reliant les stations
+  // Tracez une ligne reliant les stations filtrées
   const routeLine = L.polyline(
-    route.map(station => [station.lat, station.lng]),
+    filteredRoute.map(station => [station.lat, station.lng]),
     { color, weight: 3 }
   );
   routeLine.addTo(map.value);
   routeLines.value.push(routeLine);
+  map.value.fitBounds(routeLine.getBounds());
 };
 
 
-
 const animateBikeAlongRoute = (marker: L.Marker, stations: Station[]) => {
-
   let index = 0;
-
   const steps = 100;
-
   const delay = 90 * 1000 / steps;
 
-
   const moveBike = () => {
-
     if (index >= stations.length - 1) {
-
       index = 0;
-
     }
 
-
     const start = stations[index];
-
     const end = stations[index + 1];
-
     let step = 0;
-
-
     const animateStep = () => {
 
       if (step > steps) {
-
         index++;
 
         if (index < stations.length - 1) {
-
           moveBike();
-
         } else {
-
           index = 0;
-
           moveBike();
-
         }
 
         return;
-
       }
 
-
       const lat = start.lat + ((end.lat - start.lat) * step) / steps;
-
       const lng = start.lng + ((end.lng - start.lng) * step) / steps;
 
-
       marker.setLatLng([lat, lng]);
-
       step++;
-
       setTimeout(animateStep, delay);
-
     };
 
-
     animateStep();
-
   };
 
-
   moveBike();
-
 };
 
 
 onMounted(() => {
-
-
   fetchRecordedRoutes();
-
   map.value = L.map('map').setView([48.9111, 2.3055], 10);
-
   CyclistAmount()
 
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-
     maxZoom: 18,
-
     attribution: '&copy; OpenStreetMap contributors'
-
   }).addTo(map.value);
-
 });
 
 </script>
 
 <style scoped>
-
 .map-container {
-
   width: 100%;
-
   height: 50%;
-
 }
-
 
 .controls {
-
   display: flex;
-
   flex-direction: column;
-
   gap: 1rem;
-
 }
 
-
 .control-group {
-
   display: flex;
-
   gap: 1rem;
-
   align-items: center;
-
 }
 
 .custom-table {
@@ -598,8 +575,7 @@ onMounted(() => {
   margin: 20px 0;
 }
 
-.custom-table th,
-.custom-table td {
+.custom-table th, .custom-table td {
   border: 1px solid #ccc;
   padding: 10px;
   text-align: left;
@@ -616,73 +592,67 @@ onMounted(() => {
 }
 
 .custominput {
-
   background-color: #826b48 !important;
-
   border: none !important;
-
   margin-bottom: 1em;
-
   color: white !important;
-
   padding: 8px;
-
   border-radius: 4px;
-
   width: 200px;
-
 }
-
 
 .custominput:focus {
-
   outline: none;
-
   box-shadow: 0 0 0 2px rgba(130, 107, 72, 0.5);
-
 }
 
-
 .custombutton {
-
   background-color: #826b48;
-
   color: white;
-
   border: none;
-
   padding: 8px 16px;
-
   border-radius: 4px;
-
   cursor: pointer;
-
   transition: background-color 0.2s;
-
 }
 
 
 .custombutton:hover {
-
   background-color: #6f5a3d;
-
 }
 
-
 select.custominput {
-
   appearance: none;
-
   padding-right: 24px;
-
   background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3e%3cpath d='M7 10l5 5 5-5z'/%3e%3c/svg%3e");
-
   background-repeat: no-repeat;
-
   background-position: right 8px center;
-
   background-size: 16px;
 
 }
 
+.marker-tooltip {
+  background-color: #826b48;
+  color: white;
+  font-weight: bold;
+  border-radius: 50%;
+  padding: 4px 8px;
+  text-align: center;
+  font-size: 12px;
+}
+
+.route-details {
+  margin-top: 10px;
+  padding-left: 20px;
+  list-style: disc;
+}
+
+.route-details ul {
+  padding-left: 20px;
+}
+
+.route-details li {
+  font-size: 14px;
+  margin: 5px 0;
+}
 </style>
