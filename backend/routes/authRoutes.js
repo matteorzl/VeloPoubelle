@@ -339,7 +339,16 @@ router.get('/tournee/:id/trajets', async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      'SELECT t.lat, t.lng, a.nom FROM Trajet t JOIN Arret a ON t.id_arret = a.id_arret WHERE t.tournee_id = ? ORDER BY t.ordre_passage',
+      `SELECT 
+        t.id_trajet, -- Ajouter l'id_trajet ici
+        t.id_arret, 
+        t.lat, 
+        t.lng, 
+        a.nom 
+       FROM Trajet t 
+       JOIN Arret a ON t.id_arret = a.id_arret 
+       WHERE t.tournee_id = ? 
+       ORDER BY t.ordre_passage`,
       [tourneeId]
     );
     connection.release();
@@ -380,6 +389,28 @@ router.post('/trajet', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur lors de l\'insertion des trajets.' });
   }
 });
+
+router.patch('/trajet/:id_trajet', async (req, res) => {
+  const trajetId = req.params.id_trajet;
+  try {
+    const connection = await pool.getConnection();
+    const [result] = await connection.execute(
+      'UPDATE Trajet SET isDone = 1 WHERE id_trajet = ?',
+      [trajetId]
+    );
+    connection.release();
+
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: 'Arrêt introuvable' });
+    }
+
+    res.status(200).json({ message: 'Arrêt marqué comme terminé' });
+  } catch (error) {
+    console.error('Erreur lors de la mise à jour de isDone:', error);
+    res.status(500).json({ error: 'Erreur serveur' });
+  }
+});
+
 
 router.patch('/user/sick/:id', async (req, res) => {
   try {

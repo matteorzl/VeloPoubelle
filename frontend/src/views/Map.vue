@@ -427,6 +427,7 @@ const calculateRoutes = async () => {
       return 'Aucun trajet disponible';
     }
   });
+  
   showRecordedRoutes.value = false
 };
 
