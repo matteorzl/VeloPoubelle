@@ -59,18 +59,22 @@ const loadUserTourneeTrajets = async () => {
     trajets.value = response.data.trajets;
     console.log("Trajets reçus :", trajets.value);
 
-    if (trajets.value.length < 2) {
-      console.warn('Pas assez de trajets trouvés pour cet utilisateur.');
-      return;
+    // Trouvez l'indice du prochain trajet non terminé
+    currentStopIndex = trajets.value.findIndex((stop) => stop.isDone === 0);
+
+    if (currentStopIndex === -1) {
+      console.log("Tous les trajets sont terminés.");
+      currentStopIndex = trajets.value.length - 1;
     }
 
-    if (map.value) {
-      map.value.setView([trajets.value[0].lat, trajets.value[0].lng], 14);
+    if (map.value && trajets.value.length > 0) {
+      map.value.setView([trajets.value[currentStopIndex].lat, trajets.value[currentStopIndex].lng], 14);
     }
   } catch (error) {
     console.error('Erreur lors de la récupération des trajets:', error);
   }
 };
+
 
 // Fonction pour afficher les arrêts passés et le trajet en cours
 const displayCurrentStops = () => {
@@ -78,13 +82,12 @@ const displayCurrentStops = () => {
 
   clearMarkersAndLines();
 
-  // Afficher les arrêts passés (isDone = 1)
   const passedStops = trajets.value.filter((stop, index) => index < currentStopIndex);
   passedStops.forEach((stop, index) => {
     if (stop.lat && stop.lng) {
       const marker = L.marker([stop.lat, stop.lng], {
         icon: L.icon({
-          iconUrl: '/src/assets/passed-marker.png', // Icône personnalisée pour les arrêts passés
+          iconUrl: '/src/assets/passed-marker.png',
           iconSize: [16, 16],
         }),
       }).bindTooltip(`<b>Arrêt ${index + 1}/${trajets.value.length}: ${stop.nom}</b>`, {
@@ -96,10 +99,14 @@ const displayCurrentStops = () => {
     }
   });
 
-  // Afficher le trajet actuel
   if (currentStopIndex < trajets.value.length - 1) {
     const start = trajets.value[currentStopIndex];
     const end = trajets.value[currentStopIndex + 1];
+
+    if (start.lat === end.lat && start.lng === end.lng) {
+      console.log("Départ et arrivée sont identiques pour cet étape, aucun trajet affiché.");
+      return;
+    }
 
     if (start.lat && start.lng) {
       const startMarker = L.marker([start.lat, start.lng])
@@ -132,7 +139,6 @@ const displayCurrentStops = () => {
       line.addTo(map.value);
       routeLines.value.push(line);
 
-      // Ajuster la vue de la carte pour afficher les deux points
       map.value.fitBounds([
         [start.lat, start.lng],
         [end.lat, end.lng],
@@ -161,7 +167,10 @@ const startRoute = () => {
 };
 
 const moveBikeToNextStop = async () => {
-  if (!trajets.value || currentStopIndex >= trajets.value.length - 1) return;
+  if (!trajets.value || currentStopIndex >= trajets.value.length - 1) {
+    console.log("Trajet terminé.");
+    return;
+  }
 
   const start = trajets.value[currentStopIndex];
   const end = trajets.value[currentStopIndex + 1];
@@ -172,36 +181,44 @@ const moveBikeToNextStop = async () => {
     return;
   }
 
-  // Utiliser une distance fixe de 500m pour le mouvement
-  const distance = 500; // Distance en mètres
-  const speed = 200; // Vitesse en km/h
-  const time = (distance / 1000) / speed * 3600; // Temps en secondes
+  // Si le point de départ est identique au point d'arrivée
+  if (start.lat === end.lat && start.lng === end.lng) {
+    console.log(`Étape ignorée car départ et arrivée sont identiques (id_trajet: ${start.id_trajet})`);
+    
+    // Marquer cette étape comme terminée
+    await axios
+      .patch(`/api/trajet/${start.id_trajet}`, { isDone: 1 })
+      .then(() => console.log(`Trajet ${start.id_trajet} marqué comme terminé.`))
+      .catch(console.error);
 
-  // Animation du déplacement
+    currentStopIndex++;
+    displayCurrentStops(); // Mettre à jour la carte
+    moveBikeToNextStop(); // Passer au trajet suivant
+    return;
+  }
+
+  // Utiliser une distance fixe de 500m pour le mouvement
+  const distance = 500;
+  const speed = 2000;
+  const time = (distance / 1000) / speed * 3600;
+
   const steps = 100;
   let step = 0;
   const delay = (time * 1000) / steps;
 
   const moveBike = () => {
     if (step >= steps) {
-      // Arrivé à la destination
       currentStopIndex++;
-
-      // Met à jour isDone en se basant sur id_trajet
       axios
         .patch(`/api/trajet/${start.id_trajet}`, { isDone: 1 })
         .then(() => console.log(`Trajet ${start.id_trajet} marqué comme terminé.`))
         .catch(console.error);
 
-      // Afficher le prochain trajet
       displayCurrentStops();
-
-      // Déplacer vers le prochain arrêt
       moveBikeToNextStop();
       return;
     }
 
-    // Calculer la position intermédiaire
     const lat = start.lat + ((end.lat - start.lat) * step) / steps;
     const lng = start.lng + ((end.lng - start.lng) * step) / steps;
 
@@ -214,7 +231,6 @@ const moveBikeToNextStop = async () => {
 
   moveBike();
 };
-
 
 onMounted(() => {
   map.value = L.map('map').setView([48.8511, 2.355], 14);
