@@ -260,6 +260,23 @@ router.put('/user/password/:id', async (req, res) => {
   }
 });
 
+router.patch('/tournee/:id/encours', async (req, res) => {
+    const userid = req.params.id;
+    try {
+      const connection = await pool.getConnection();
+      const [result] = await connection.execute(
+        'UPDATE Tournee SET etat = en_cours WHERE cycliste_id = ?',
+        [userid]
+      );
+      connection.release();
+  
+      res.status(200).json({ message: 'Tournée démarré' });
+    } catch (error) {
+      console.error('Erreur lors de la mise à jour de isDone:', error);
+      res.status(500).json({ error: 'Erreur serveur' });
+    }
+  };
+
 router.post('/tournee', async (req, res) => {
   const { tournees } = req.body;
   const connection = await pool.getConnection();

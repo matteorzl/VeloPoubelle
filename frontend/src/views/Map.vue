@@ -109,6 +109,7 @@ import L from 'leaflet';
 import { optimizeRoute } from '../components/dijkstra';
 import 'leaflet/dist/leaflet.css';
 import { useToast } from "primevue/usetoast";
+import router from '@/router';
 axios.defaults.baseURL = 'http://localhost:3000';
 
 interface Station {
