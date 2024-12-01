@@ -28,3 +28,41 @@ coverage
 *.sw?
 
 *.tsbuildinfo
+
+# ORS
+
+/ors/.idea/
+/ors/*.iml
+/ors/*.ipr
+/ors/.DS_Store
+/ors/**/.m2/
+
+/ors/graphs/
+/ors/graph-repo/
+/ors/graphs-*/
+/ors/target/
+/ors/logs/
+/ors/elevation_cache/
+/ors/cgiar_cache/
+/ors/node_modules/
+
+# jqwik
+/ors/.jqwik-database
+
+# Ignore folders generated from docker
+/ors/config/
+/ors/files/
+
+# Ignore all ors-config files except for the sample one, useful for development and testing
+/ors/ors-api/src/main/resources/ors-config*
+/ors/ors-config*
+/ors/ors-docker/**
+
+/ors/envs/
+/ors/ors-config-repo/
+
+# docs stuff
+/ors/docs/.vitepress/dist
+/ors/docs/.vitepress/cache
+/ors//.integration-scenarios/debian-12-jar-mvn/graphs_volume/
+/ors//.integration-scenarios/debian-12-jar-mvn/tmp/
