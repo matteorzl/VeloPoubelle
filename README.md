@@ -18,7 +18,10 @@
 
 ## 📂 Structure du Projet
 
-VeloPoubelle/ ├── frontend/ # Interface utilisateur (Vue.js) ├── backend/ # API et logique métier (Node.js) ├── ors/ # Calcul des itinéraires (ORS via Docker)
+VeloPoubelle/ 
+    ├── frontend/ # Interface utilisateur (Vue.js) 
+    ├── backend/ # API et logique métier (Node.js) 
+    ├── ors/ # Calcul des itinéraires (ORS via Docker)
 
 ---
 
