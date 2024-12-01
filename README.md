@@ -18,10 +18,10 @@
 
 ## 📂 Structure du Projet
 
-VeloPoubelle/ 
-    ├── frontend/ # Interface utilisateur (Vue.js) 
-    ├── backend/ # API et logique métier (Node.js) 
-    ├── ors/ # Calcul des itinéraires (ORS via Docker)
+VeloPoubelle
+* ├── frontend/ # Interface utilisateur (Vue.js) 
+* ├── backend/ # API et logique métier (Node.js) 
+* ├── ors/ # Calcul des itinéraires (ORS via Docker)
 
 ---
 
@@ -35,7 +35,7 @@ VeloPoubelle/
 
 2. Installez les dépendances :
    ```bash
-      npm install
+    npm install
 
 3. Lancez le serveur de développement :
    ```bash
@@ -53,7 +53,7 @@ VeloPoubelle/
 
 2. Installez les dépendances :
    ```bash
-      npm install
+    npm install
 
 3. Lancez le serveur de développement :
    ```bash
@@ -71,7 +71,7 @@ VeloPoubelle/
 
 2. Lancez le service Docker pour ORS :
    ```bash
-      docker compose up
+    docker compose up
 
 3. Accédez à l'interface ORS à l'adresse suivante : http://localhost:8080
 
@@ -79,15 +79,15 @@ VeloPoubelle/
 
 ### **Frontend**
 
-Vue.js
-Vite.js
-Leaflet (cartographie interactive)
+* Vue.js
+* Vite.js
+* Leaflet (cartographie interactive)
 
 ### **Backend**
 
-Node.js
-Express.js
-PostgreSQL (Base de données)
+* Node.js
+* Express.js
+* PostgreSQL (Base de données)
 
 ### **Services Externes**
 
