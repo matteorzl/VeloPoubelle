@@ -3,29 +3,27 @@
 ## Recommended IDE Setup
 
 [VSCode](https://code.visualstudio.com/)
+[Docker](https://www.docker.com/)
 
-## Project Setup [FRONTEND]
+## [FRONTEND]
 
 ```sh
 cd frontend
 npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
 npm run dev
 ```
 
-## Project Setup [BACKEND]
+## [BACKEND]
 
 ```sh
 cd backend
 npm install
+npm run dev
 ```
 
-### Compile and Hot-Reload for Development
+## [ORS]
 
 ```sh
-npm run dev
+cd ors
+docker compose up
 ```
