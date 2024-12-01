@@ -6,7 +6,7 @@
 
 ---
 
-## 🛠️ IDE & Outils recommandée
+## 🛠️ IDE & Outils recommandés
 
 ### **🖥️ IDE**
 - [Visual Studio Code (VSCode)](https://code.visualstudio.com/) - pour un développement rapide et efficace.
