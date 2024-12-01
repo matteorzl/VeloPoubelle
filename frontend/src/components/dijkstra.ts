@@ -136,14 +136,24 @@ export function optimizeRoute(stations: Station[]): Station[] {
     const segment = remainingStations.slice(0, 4);
     remainingStations = remainingStations.slice(4);
 
-    // Optimiser localement ces 4 stations
-    const localPath: Station[] = [porteDIvry, ...segment, porteDIvry];
-    optimizedPath.push(...localPath);
-  }
+    // Ajouter Porte d'Ivry uniquement si elle n'est pas déjà à la fin du chemin optimisé
+    if (
+      optimizedPath.length === 0 || 
+      optimizedPath[optimizedPath.length - 1].id_arret !== porteDIvry.id_arret
+    ) {
+      optimizedPath.push(porteDIvry);
+    }
 
-  // Ajouter Porte d'Ivry comme point final si absent
-  if (optimizedPath[optimizedPath.length - 1].id_arret !== porteDIvry.id_arret) {
-    optimizedPath.push(porteDIvry);
+    // Ajouter les stations locales
+    optimizedPath.push(...segment);
+
+    // Ajouter Porte d'Ivry uniquement si elle n'est pas déjà présente
+    if (
+      remainingStations.length > 0 || // Si ce n'est pas le dernier segment
+      optimizedPath[optimizedPath.length - 1].id_arret !== porteDIvry.id_arret
+    ) {
+      optimizedPath.push(porteDIvry);
+    }
   }
 
   return optimizedPath;

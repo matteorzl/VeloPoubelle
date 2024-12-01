@@ -70,13 +70,28 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="route in recordedRoutes" :key="route.idTournee">
+            <tr v-for="(route) in recordedRoutes" :key="route.idTournee">
               <td>{{ route.idTournee }}</td>
               <td>{{ route.cycliste }}</td>
               <td>{{ route.nom }}</td>
               <td>{{ route.stops }}</td>
               <td>
                 <button @click="showRecordedRoute(route.idTournee)" class="custombutton">Voir</button>
+                <button @click="toggleRouteDetails(route.idTournee)" class="custombutton" style="margin-left: 5px;">
+                  {{ routeDetailsVisible[route.idTournee] ? "Masquer" : "Afficher" }} l'état de la tournée
+                </button>
+
+                <div v-if="routeDetailsVisible[route.idTournee]" class="route-details">
+                  <ul>
+                    <li 
+                      v-for="(station, stationIndex) in detailedRoute[route.idTournee]" 
+                      :key="stationIndex"
+                      :style="{ color: station.isDone ? 'green' : 'black' }"
+                    >
+                      {{ stationIndex + 1 }}. {{ station.nom }}
+                    </li>
+                  </ul>
+                </div>
               </td>
             </tr>
           </tbody>
@@ -118,6 +133,9 @@ const stationMarkers = ref<L.Marker[]>([]);
 const assignments = ref<Record<number, number>>({});
 const showRecordedRoutes = ref(false);
 const recordedRoutes = ref([]);
+const actualUser = ref(undefined);
+const detailedRoute = ref<Record<number, any[]>>({});
+const routeDetailsVisible = ref<Record<number, boolean>>({});
 
 const loadRoute = async (): Promise<Station[]> => {
   try {
@@ -140,6 +158,25 @@ const loadRoute = async (): Promise<Station[]> => {
   }
 };
 
+async function getActualUser(){
+if(localStorage.getItem("token")) {
+  try{
+    const resp = await axios.get('/api/app', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    actualUser.value = resp.data.message
+    if(actualUser.value.role !== 'administrateur' && actualUser.value.role !== 'gestionnaire_reseau') {
+      router.push("/app/mapcyclist")
+    }
+  }
+  catch(error) {
+    message.value = error.response.data.error
+    showWarn(message)
+  }
+}else{
+  router.push("/login")
+  }
+}
 
 const showWarn = (message: any) => {
   toast.add({ severity: 'error', summary: "Message d'erreur", detail: message });
@@ -282,6 +319,30 @@ const showRecordedRoute = async (tourneeId: number) => {
   } catch (error) {
     console.error('Erreur lors de la récupération du trajet:', error);
     showWarn('Impossible d\'afficher le trajet.');
+  }
+};
+
+const toggleRouteDetails = async (tourneeId: number) => {
+  // Basculer l'affichage de la liste
+  routeDetailsVisible.value[tourneeId] = !routeDetailsVisible.value[tourneeId];
+
+  // Si la liste est déjà visible, ne pas recharger les données
+  if (routeDetailsVisible.value[tourneeId] && detailedRoute.value[tourneeId]) {
+    return;
+  }
+
+  try {
+    const response = await axios.get(`/api/tournee/${tourneeId}/trajets`);
+    // Enrichir les données avec `isDone`
+    detailedRoute.value[tourneeId] = response.data.trajets.map((stop: any) => ({
+      nom: stop.nom,
+      lat: stop.lat,
+      lng: stop.lng,
+      isDone: stop.isDone, // Ajoutez la propriété isDone
+    }));
+  } catch (error) {
+    console.error(`Erreur lors de la récupération des trajets pour la tournée ${tourneeId}:`, error);
+    showWarn(`Impossible de charger les arrêts pour la tournée ${tourneeId}.`);
   }
 };
 
@@ -431,13 +492,6 @@ const calculateRoutes = async () => {
   showRecordedRoutes.value = false
 };
 
-
-const routeDetailsVisible = ref<boolean[]>([]);
-
-const toggleRouteDetails = (index: number) => {
-  routeDetailsVisible.value[index] = !routeDetailsVisible.value[index];
-};
-
 const displayRoute = (routeIndex: number) => {
   if (!map.value) return;
 
@@ -496,7 +550,6 @@ const displayRoute = (routeIndex: number) => {
   routeLines.value.push(routeLine);
   map.value.fitBounds(routeLine.getBounds());
 };
-
 
 const animateBikeAlongRoute = (marker: L.Marker, stations: Station[]) => {
   let index = 0;

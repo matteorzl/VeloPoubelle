@@ -344,7 +344,8 @@ router.get('/tournee/:id/trajets', async (req, res) => {
         t.id_arret, 
         t.lat, 
         t.lng, 
-        a.nom 
+        a.nom ,
+        t.isDone
        FROM Trajet t 
        JOIN Arret a ON t.id_arret = a.id_arret 
        WHERE t.tournee_id = ? 
@@ -410,7 +411,6 @@ router.patch('/trajet/:id_trajet', async (req, res) => {
     res.status(500).json({ error: 'Erreur serveur' });
   }
 });
-
 
 router.patch('/user/sick/:id', async (req, res) => {
   try {
