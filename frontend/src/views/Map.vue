@@ -111,6 +111,7 @@ import 'leaflet/dist/leaflet.css';
 import { useToast } from "primevue/usetoast";
 import router from '@/router';
 axios.defaults.baseURL = 'http://localhost:3000';
+import router from '../router/index';
 
 interface Station {
   id_arret: number;
@@ -596,6 +597,7 @@ const animateBikeAlongRoute = (marker: L.Marker, stations: Station[]) => {
 
 
 onMounted(() => {
+  getActualUser();
   fetchRecordedRoutes();
   map.value = L.map('map').setView([48.9111, 2.3055], 10);
   CyclistAmount()
