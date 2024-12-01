@@ -63,7 +63,6 @@ const updateAutonomyForWinter = () => {
   autonomy.value = isWinter.value ? 45000 : 50000;
 };
 
-// Nettoyer les marqueurs et lignes visibles
 const clearMarkersAndLines = () => {
   stationMarkers.value.forEach(marker => marker?.remove());
   stationMarkers.value = [];
