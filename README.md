@@ -6,7 +6,7 @@
 
 ---
 
-## 🛠️ Recommended IDE & Tools
+## 🛠️ IDE & Outils recommandée
 
 ### **🖥️ IDE**
 - [Visual Studio Code (VSCode)](https://code.visualstudio.com/) - pour un développement rapide et efficace.
@@ -35,7 +35,7 @@ VeloPoubelle
 
 2. Installez les dépendances :
    ```bash
-    npm install
+   npm install
 
 3. Lancez le serveur de développement :
    ```bash
@@ -53,7 +53,7 @@ VeloPoubelle
 
 2. Installez les dépendances :
    ```bash
-    npm install
+   npm install
 
 3. Lancez le serveur de développement :
    ```bash
@@ -71,7 +71,7 @@ VeloPoubelle
 
 2. Lancez le service Docker pour ORS :
    ```bash
-    docker compose up
+   docker compose up
 
 3. Accédez à l'interface ORS à l'adresse suivante : http://localhost:8080
 
@@ -101,11 +101,11 @@ OpenRouteService pour la génération des itinéraires.
 
 2. Créez une nouvelle branche :
    ```bash
-        git checkout -b feature-name
+    git checkout -b feature-name
 
 3. Proposez vos modifications et ouvrez une pull request (PR).
 
 
 ## 🔗 Liens utiles
-[Documentation ORS](https://openrouteservice.org/dev/#/api-docs)
-[Guide Docker](https://docs.docker.com/)
+- [Documentation ORS](https://openrouteservice.org/dev/#/api-docs)
+- [Guide Docker](https://docs.docker.com/)
