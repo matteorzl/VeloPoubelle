@@ -3,7 +3,7 @@
     <div id="map" class="map-container"></div>
     <div class="info-container flex flex-column items-center justify-content-center">
       <!-- Informations sur le trajet -->
-      <button @click="startRoute" class="custombutton">Lancer le trajet</button>
+      <button @click="startRoute" class="custombutton" :disabled="started">Lancer le trajet</button>
       <div class="route-info flex items-center justify-content-center">
         <p v-if="trajets.length > 0 && currentStopIndex >= 0 && currentStopIndex < trajets.length">
           📏 Distance entre ces points : {{ distance.toFixed(2) }} km - Distance totale parcourue : {{ distanceTotal.toFixed(2) }} km <br /><br />
@@ -14,10 +14,10 @@
       </div>
       <div class="flex items-center justify-content-center">
         <label>
-          <input type="radio" name="winter" value="no" v-model="isWinter" />☀️
+          <input type="radio" name="winter" value=false v-model="isWinter" checked/>☀️
         </label>
         <label style="margin-left: 10px;">
-          <input type="radio" name="winter" value="yes" v-model="isWinter" />❄️
+          <input type="radio" name="winter" value=true v-model="isWinter" />❄️
         </label>
       </div>
     </div>
@@ -27,9 +27,13 @@
 <script setup lang="ts">
 import { onMounted, ref, computed } from 'vue';
 import axios from 'axios';
+axios.defaults.baseURL = 'http://localhost:3000';
 import L from 'leaflet';
 import polyline from '@mapbox/polyline';
+import { useToast } from "primevue/usetoast";
 
+const message = ref('');
+const toast = useToast();
 const map = ref<L.Map>();
 const stationMarkers = ref<L.Marker[]>([]);
 const routeLines = ref<L.Polyline[]>([]);
@@ -43,7 +47,9 @@ const durationTotal = ref(0);
 let autonomy = ref(50000); // En mètres
 let capacity = ref(0); // En kg
 const maxCapacity = 200; // Capacité maximale
-const isWinter = ref("no");
+const isWinter = ref(false);
+const started = ref(false);
+const utilisateur_id = ref("")
 
 const currentStopName = computed(() => {
   if (trajets.value.length > 0 && currentStopIndex >= 0 && currentStopIndex < trajets.value.length) {
@@ -77,6 +83,7 @@ const loadUserTourneeTrajets = async () => {
     });
     const user = userResponse.data.message;
     const userId = user.id_utilisateur;
+    utilisateur_id.value = user.id_utilisateur;
 
     const response = await axios.get(`/api/tournee/${userId}/trajet/user`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -157,7 +164,7 @@ const displayCurrentStops = async () => {
         capacity.value = Math.min(capacity.value + 50, maxCapacity);
       } else {
         capacity.value = 0;
-        if(!isWinter.value) {
+        if(isWinter.value === false) {
           autonomy.value = 50000;
         } else {
           autonomy.value = 45000;
@@ -167,13 +174,27 @@ const displayCurrentStops = async () => {
   }
 };
 
+const showSuccess = (message: any) => {
+  toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
+};
+
+const setTourneeEnCours = async () =>{
+  console.log(utilisateur_id.value)
+  axios.patch(`api/tournee/encours/${utilisateur_id.value}`)
+  .then(() => {
+      message.value = `Tournée démarré`;
+      showSuccess(message)
+    })
+}
+
 const startRoute = () => {
   updateAutonomyForWinter();
+  setTourneeEnCours();
 
   if (!trajets.value || trajets.value.length < 2) return;
 
   currentStopIndex = 0;
-
+  started.value = true
   const start = trajets.value[currentStopIndex];
   bikeMarker.value = L.marker([start.lat, start.lng], {
     icon: L.icon({

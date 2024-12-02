@@ -76,7 +76,8 @@
               <td>{{ route.cycliste }}</td>
               <td>{{ route.nom }}</td>
               <td>{{ route.stops }}</td>
-              <td>{{ route.status }}</td>
+              <td v-if="route.status == 'planifiee'">Planifié</td>
+              <td v-if="route.status == 'en_cours'">En cours</td>
               <td>
                 <button @click="showRecordedRoute(route.idTournee)" class="custombutton">Voir</button>
                 <button @click="toggleRouteDetails(route.idTournee)" class="custombutton" style="margin-left: 5px;">
@@ -222,7 +223,8 @@ const CyclistAmount = async () => {
 const fetchRecordedRoutes = async () => {
   try {
     const response = await axios.get('/api/tournee');
-    console.log(response)
+    console.log(response);
+    
     recordedRoutes.value = response.data.rows.map((route: any) => ({
       idTournee: route.id_tournee,
       nom: route.nom,
@@ -230,13 +232,17 @@ const fetchRecordedRoutes = async () => {
       status: route.status,
       stops: route.nombre_arrets,
     }));
+    
     showRecordedRoutes.value = true;
   } catch (error) {
     console.error('Erreur lors de la récupération des tournées enregistrées:', error);
-    message.value ='Impossible de charger les tournées.';
-    showWarn(message)
+    message.value = 'Impossible de charger les tournées.';
+    showWarn(message);
   }
 };
+
+// Met à jour la requête toutes les 30 secondes 
+setInterval(fetchRecordedRoutes, 30000);
 
 const saveTournees = async () => {
   if (!formattedRoutes.value.length) {

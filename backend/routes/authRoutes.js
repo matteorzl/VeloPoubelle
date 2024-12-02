@@ -336,6 +336,35 @@ router.get('/tournee', async (req, res) => {
   }
 });
 
+router.patch('/tournee/encours/:id', async (req, res) => {
+  const userId = req.params.id;
+  const connection = await pool.getConnection();
+  try {
+    const [tourneeRows] = await connection.execute(
+      `SELECT * FROM Tournee WHERE cycliste_id = ?`,
+      [userId]
+    );
+
+    const tourneeId = tourneeRows[0].id_tournee
+
+    const result = await connection.execute(
+      'UPDATE Tournee SET etat = ? WHERE id_tournee = ?',
+      ['en_cours', tourneeId]
+    );
+
+    connection.release();
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ error: "Tournée introuvable." });
+    }
+
+    res.status(200).json({ message: "Cycliste attribué avec succès.", tournee: result });
+  } catch (error) {
+    console.error("Erreur lors de l'attribution :", error);
+    res.status(500).json({ error: "Erreur serveur lors de l'attribution." });
+  }
+});
+
 router.get('/tournee/:id/trajet/user', async (req, res) => {
   const userId = req.params.id;
   try {
