@@ -120,10 +120,9 @@ const onDelete = async () => {
 };
 
 const declareSick = async (userId, currentValue) => {
-  try {
-    console.log(currentValue)
-    if (user.value) {
-      user.value.isSick = currentValue;
+  try { 
+    if (user) {
+      user.isSick = currentValue;
 
       // Envoyer la mise à jour au serveur
       await axios.patch(`/api/user/sick/${userId}`, { isSick: currentValue });
@@ -134,7 +133,7 @@ const declareSick = async (userId, currentValue) => {
         : 'Utilisateur déclaré rétabli avec succès.';
       showSuccess(message);
       getUsers()
-    }
+    }  
   } catch (error) {
     console.error('Erreur lors de la mise à jour du statut de maladie :', error);
     message.value = 'Une erreur est survenue.';

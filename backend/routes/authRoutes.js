@@ -9,7 +9,7 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',  
     database: 'velopoubelle',
-    password: 'root',
+    password: '',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -71,7 +71,7 @@ router.get('/app', authenticationToken, async (req, res) => {
   try {
     const connection = await pool.getConnection();
     const [rows] = await connection.execute(
-      'SELECT nom, prenom, role, id_utilisateur FROM Utilisateur WHERE id_utilisateur = ?', 
+      'SELECT nom, prenom, role, id_utilisateur, isSick FROM Utilisateur WHERE id_utilisateur = ?', 
       [req.user.userId]
     );
     connection.release();

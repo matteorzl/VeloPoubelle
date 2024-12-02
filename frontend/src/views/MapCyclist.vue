@@ -217,10 +217,16 @@ const setTourneeEnCours = async () =>{
 
 const startRoute = () => {
   updateAutonomyForWinter();
-  setTourneeEnCours();
 
   if (!trajets.value || trajets.value.length < 2) return;
 
+  if(actualUser.value.isSick){
+    message.value = "Vous êtes déclarer malade veuillez contacter le service RH"
+    showWarn(message)
+    return
+  }
+
+  setTourneeEnCours();
   currentStopIndex = 0;
   started.value = true
   const start = trajets.value[currentStopIndex];
