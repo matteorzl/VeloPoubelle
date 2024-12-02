@@ -54,7 +54,7 @@ if(localStorage.getItem("token")) {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     actualUser.value = resp.data.message
-    if(actualUser.value.role !== 'administrateur' && actualUser.value.role !== 'rh') {
+    if(actualUser.value.role !== 'administrateur' && actualUser.value.role !== 'RH') {
       router.push("/app/map")
     }
   }

@@ -31,6 +31,7 @@ axios.defaults.baseURL = 'http://localhost:3000';
 import L from 'leaflet';
 import polyline from '@mapbox/polyline';
 import { useToast } from "primevue/usetoast";
+import router from '@/router';
 
 const message = ref('');
 const toast = useToast();
@@ -50,6 +51,30 @@ const maxCapacity = 200; // Capacité maximale
 const isWinter = ref(false);
 const started = ref(false);
 const utilisateur_id = ref("")
+const actualUser = ref(undefined)
+
+async function getActualUser(){
+if(localStorage.getItem("token")) {
+  try{
+    const resp = await axios.get('/api/app', {
+      headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
+    })
+    actualUser.value = resp.data.message
+    if(actualUser.value.role == 'gestionnaire_reseau') {
+      router.push("/app/map")
+    }
+    else if(actualUser.value.role == 'RH') {
+      router.push("/app/users")
+    }
+  }
+  catch(error) {
+    message.value = error.response.data.error
+    showWarn(message)
+  }
+}else{
+  router.push("/login")
+  }
+}
 
 const currentStopName = computed(() => {
   if (trajets.value.length > 0 && currentStopIndex >= 0 && currentStopIndex < trajets.value.length) {
@@ -174,6 +199,9 @@ const displayCurrentStops = async () => {
   }
 };
 
+const showWarn = (message: any) => {
+  toast.add({ severity: 'error', summary: "Message d'erreur", detail: message });
+};
 const showSuccess = (message: any) => {
   toast.add({ severity: 'success', summary: "Succès", detail: message, life: 3000 });
 };
@@ -253,6 +281,7 @@ const moveBikeToNextStop = async () => {
 };
 
 onMounted(() => {
+  getActualUser()
   updateAutonomyForWinter();
 
   clearMarkersAndLines();

@@ -169,8 +169,11 @@ if(localStorage.getItem("token")) {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
     })
     actualUser.value = resp.data.message
-    if(actualUser.value.role !== 'administrateur' && actualUser.value.role !== 'gestionnaire_reseau') {
+    if(actualUser.value.role == 'cycliste') {
       router.push("/app/mapcyclist")
+    }
+    else if(actualUser.value.role == 'RH') {
+      router.push("/app/users")
     }
   }
   catch(error) {
