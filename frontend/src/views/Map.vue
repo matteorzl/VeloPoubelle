@@ -66,6 +66,7 @@
               <th>Cycliste</th>
               <th>Nom</th>
               <th>Nombre d'arrêts</th>
+              <th>Status</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -75,6 +76,7 @@
               <td>{{ route.cycliste }}</td>
               <td>{{ route.nom }}</td>
               <td>{{ route.stops }}</td>
+              <td>{{ route.status }}</td>
               <td>
                 <button @click="showRecordedRoute(route.idTournee)" class="custombutton">Voir</button>
                 <button @click="toggleRouteDetails(route.idTournee)" class="custombutton" style="margin-left: 5px;">
@@ -225,6 +227,7 @@ const fetchRecordedRoutes = async () => {
       idTournee: route.id_tournee,
       nom: route.nom,
       cycliste: route.cycliste,
+      status: route.status,
       stops: route.nombre_arrets,
     }));
     showRecordedRoutes.value = true;

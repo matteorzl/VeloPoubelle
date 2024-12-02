@@ -78,7 +78,7 @@ const loadUserTourneeTrajets = async () => {
     const user = userResponse.data.message;
     const userId = user.id_utilisateur;
 
-    const response = await axios.get(`/api/tournee/${userId}/trajets`, {
+    const response = await axios.get(`/api/tournee/${userId}/trajet/user`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
 
@@ -102,6 +102,7 @@ const fetchRoute = async (start, end) => {
       [start.lng, start.lat],
       [end.lng, end.lat],
     ],
+    profile: "cycling-electric",
     instructions: false,
     geometry: true,
   };

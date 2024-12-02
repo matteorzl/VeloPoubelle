@@ -122,8 +122,8 @@ const onDelete = async () => {
 const declareSick = async (userId, currentValue) => {
   try {
     console.log(currentValue)
-    if (user) {
-      user.isSick = currentValue;
+    if (user.value) {
+      user.value.isSick = currentValue;
 
       // Envoyer la mise à jour au serveur
       await axios.patch(`/api/user/sick/${userId}`, { isSick: currentValue });
@@ -158,6 +158,7 @@ const onModify = async () => {
           showDialogModify.value = false;
           message.value = response.data.message
           showSuccess(message)
+          user.value = ""
       }
     } catch (err) {
       setTimeout(() => {
@@ -185,7 +186,7 @@ const onCreate = async () => {
     firstName.value = ''
     mail.value = ''
     password.value = ''
-    userrole.value.value = ''
+    userrole.value = ''
   }
 } catch (err) {
   error.value = err.response?.data?.error || 'Erreur lors de la création du compte';

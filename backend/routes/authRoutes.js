@@ -9,7 +9,7 @@ const pool = mysql.createPool({
     host: 'localhost',
     user: 'root',  
     database: 'velopoubelle',
-    password: '',
+    password: 'root',
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0
@@ -305,6 +305,7 @@ router.get('/tournee', async (req, res) => {
           t.nom AS nom_tournee,
           u.nom AS nom_cycliste,
           u.prenom AS prenom_cycliste,
+          t.etat AS state_tournee,
           COUNT(tr.id_trajet) AS nombre_arrets
       FROM 
           Tournee t
@@ -324,12 +325,53 @@ router.get('/tournee', async (req, res) => {
       id_tournee: row.id_tournee,
       nom: row.nom_tournee,
       cycliste: `${row.prenom_cycliste} ${row.nom_cycliste}`.trim(),
+      status: row.state_tournee,
       nombre_arrets: row.nombre_arrets,
     }));
 
     res.status(200).json({ rows: tournees });
   } catch (error) {
     console.error('Erreur lors de la récupération des tournées:', error);
+    res.status(500).json({ error: 'Erreur interne du serveur.' });
+  }
+});
+
+router.get('/tournee/:id/trajet/user', async (req, res) => {
+  const userId = req.params.id;
+  try {
+    const connection = await pool.getConnection();
+    const [tourneeRows] = await connection.execute(
+      `SELECT * FROM Tournee WHERE cycliste_id = ?`,
+      [userId]
+    );
+
+    const tourneeId = tourneeRows[0].id_tournee
+
+    // Si la tournée n'existe pas pour cet utilisateur, retournez une erreur
+    if (tourneeRows.length === 0) {
+      connection.release();
+      return res.status(404).json({ error: 'Tournée non trouvée pour cet utilisateur.' });
+    }
+
+    // Récupérer les trajets associés à cette tournée
+    const [trajetsRows] = await connection.execute(
+      `SELECT 
+        t.id_trajet,
+        t.id_arret,
+        t.lat,
+        t.lng,
+        a.nom,
+        t.isDone
+       FROM Trajet t
+       JOIN Arret a ON t.id_arret = a.id_arret
+       WHERE t.tournee_id = ? 
+       ORDER BY t.ordre_passage`,
+      [tourneeId]
+    );
+    connection.release();
+    res.status(200).json({ trajets: trajetsRows });
+  } catch (error) {
+    console.error('Erreur lors de la récupération des trajets:', error);
     res.status(500).json({ error: 'Erreur interne du serveur.' });
   }
 });
