@@ -44,7 +44,6 @@ let autonomy = ref(50000); // En mètres
 let capacity = ref(0); // En kg
 const maxCapacity = 200; // Capacité maximale
 const isWinter = ref("no");
-const userId = ref(undefined)
 
 const currentStopName = computed(() => {
   if (trajets.value.length > 0 && currentStopIndex >= 0 && currentStopIndex < trajets.value.length) {
@@ -77,7 +76,7 @@ const loadUserTourneeTrajets = async () => {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
     });
     const user = userResponse.data.message;
-    userId.value = user.id_utilisateur;
+    const userId = user.id_utilisateur;
 
     const response = await axios.get(`/api/tournee/${userId}/trajets`, {
       headers: { Authorization: `Bearer ${localStorage.getItem('token')}` },
@@ -167,14 +166,8 @@ const displayCurrentStops = async () => {
   }
 };
 
-const setTrajetEnCours = () =>{
-  axios.patch(`/api/tournee/${userId}/encours`)
-}
-
 const startRoute = () => {
   updateAutonomyForWinter();
-
-  setTrajetEnCours()
 
   if (!trajets.value || trajets.value.length < 2) return;
 

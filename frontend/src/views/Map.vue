@@ -111,7 +111,6 @@ import 'leaflet/dist/leaflet.css';
 import { useToast } from "primevue/usetoast";
 import router from '@/router';
 axios.defaults.baseURL = 'http://localhost:3000';
-import router from '../router/index';
 
 interface Station {
   id_arret: number;

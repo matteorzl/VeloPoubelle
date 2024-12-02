@@ -54,9 +54,7 @@ coverage
 /ors/files/
 
 # Ignore all ors-config files except for the sample one, useful for development and testing
-/ors/ors-api/src/main/resources/ors-config*
-/ors/ors-config*
-/ors/ors-docker/**
+/ors/ors-docker/
 
 /ors/envs/
 /ors/ors-config-repo/
